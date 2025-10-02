@@ -1,18 +1,19 @@
 # zod-to-camel-case
+
 Convert zod schemas to camel case keys
 
 Here is an example
 
 ```ts
-import {z} from "zod"
-import zodToCamelCase from "zod-to-camel-case"
+import { z } from "zod";
+import zodToCamelCase from "zod-to-camel-case";
 
 // Original schema
 const schema = z.object({
-    full_name: z.string(),
-    user: z.object({
-        email_addresses: z.array(z.email()),
-    })
+  full_name: z.string(),
+  user: z.object({
+    email_addresses: z.array(z.email()),
+  }),
 });
 
 // Convert the schema
@@ -30,14 +31,15 @@ type Foo = z.infer<typeof camelCaseSchema>; /**
  */
 
 const results = camelCaseSchema.parse({
-    fullName: "Turanga Leela",
-    user: {
-        emailAddresses: ["name@example.com"]
-    }
+  fullName: "Turanga Leela",
+  user: {
+    emailAddresses: ["name@example.com"],
+  },
 });
 ```
 
 ## Test
+
 [![codecov](https://codecov.io/github/orangemug/zod-to-camel-case/graph/badge.svg?token=00EOGLB2HF)](https://codecov.io/github/orangemug/zod-to-camel-case)
 
 ```bash
@@ -45,4 +47,5 @@ npm test
 ```
 
 ## License
+
 MIT

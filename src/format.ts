@@ -1,4 +1,3 @@
-
 export const camelToSnake = (str: string) =>
   str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
@@ -6,7 +5,7 @@ export function keysToSnake<T>(obj: T): any {
   if (Array.isArray(obj)) return obj.map(keysToSnake);
   if (obj !== null && typeof obj === "object") {
     return Object.fromEntries(
-      Object.entries(obj).map(([k, v]) => [camelToSnake(k), keysToSnake(v)])
+      Object.entries(obj).map(([k, v]) => [camelToSnake(k), keysToSnake(v)]),
     );
   }
   return obj;
