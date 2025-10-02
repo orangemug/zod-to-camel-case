@@ -37,6 +37,12 @@ const results = camelCaseSchema.parse({
 });
 ```
 
+## Test
+[![codecov](https://codecov.io/github/orangemug/zod-to-camel-case/graph/badge.svg?token=00EOGLB2HF)](https://codecov.io/github/orangemug/zod-to-camel-case)
+
+```bash
+npm test
+```
 
 ## License
 MIT
