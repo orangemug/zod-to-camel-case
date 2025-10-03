@@ -12,7 +12,6 @@ describe("zodToCamelCaseOutput", () => {
         }),
       });
       const camelCaseSchema = zodToCamelCase(schema);
-      type Foo = z.infer<typeof camelCaseSchema>;
       const results = camelCaseSchema.safeParse({
         key_one: "one",
         key_two: "two",
