@@ -1,7 +1,7 @@
 import z from "zod";
 import { zodToCamelCase } from "./";
 
-describe("zodToCamelCaseOutput", () => {
+describe("zodToCamelCase (unidirectional)", () => {
   describe(".safeParse()", () => {
     test("valid nested data", () => {
       const schema = z.object({
@@ -53,6 +53,20 @@ describe("zodToCamelCaseOutput", () => {
           2,
         ),
       );
+    });
+
+    test("non-object schema", () => {
+      const schema = z.string();
+      const camelCaseSchema = zodToCamelCase(schema);
+      const result = camelCaseSchema.safeParse("testing");
+      expect(result.data).toEqual("testing");
+    });
+
+    test("array schema", () => {
+      const schema = z.array(z.object({ foo_bar: z.string() }));
+      const camelCaseSchema = zodToCamelCase(schema);
+      const result = camelCaseSchema.safeParse([{ foo_bar: "testing" }]);
+      expect(result.data).toEqual([{ fooBar: "testing" }]);
     });
   });
 
@@ -124,10 +138,24 @@ describe("zodToCamelCaseOutput", () => {
         });
       }).toThrow(new Error("arrgh"));
     });
+
+    test("non-object schema", () => {
+      const schema = z.string();
+      const camelCaseSchema = zodToCamelCase(schema);
+      const result = camelCaseSchema.parse("testing");
+      expect(result).toEqual("testing");
+    });
+
+    test("array schema", () => {
+      const schema = z.array(z.object({ foo_bar: z.string() }));
+      const camelCaseSchema = zodToCamelCase(schema);
+      const result = camelCaseSchema.parse([{ foo_bar: "testing" }]);
+      expect(result).toEqual([{ fooBar: "testing" }]);
+    });
   });
 });
 
-describe("zodToCamelCaseInputOutput", () => {
+describe("zodToCamelCase (bidirectional)", () => {
   describe(".safeParse()", () => {
     test("valid nested data", () => {
       const schema = z.object({
@@ -179,6 +207,20 @@ describe("zodToCamelCaseInputOutput", () => {
           2,
         ),
       );
+    });
+
+    test("non-object schema", () => {
+      const schema = z.string();
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
+      const result = camelCaseSchema.safeParse("testing");
+      expect(result.data).toEqual("testing");
+    });
+
+    test("array schema", () => {
+      const schema = z.array(z.object({ foo_bar: z.string() }));
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
+      const result = camelCaseSchema.safeParse([{ fooBar: "testing" }]);
+      expect(result.data).toEqual([{ fooBar: "testing" }]);
     });
   });
 
@@ -249,6 +291,20 @@ describe("zodToCamelCaseInputOutput", () => {
           keyOne: "one",
         });
       }).toThrow(new Error("arrgh"));
+    });
+
+    test("non-object schema", () => {
+      const schema = z.string();
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
+      const result = camelCaseSchema.parse("testing");
+      expect(result).toEqual("testing");
+    });
+
+    test("array schema", () => {
+      const schema = z.array(z.object({ foo_bar: z.string() }));
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
+      const result = camelCaseSchema.parse([{ fooBar: "testing" }]);
+      expect(result).toEqual([{ fooBar: "testing" }]);
     });
   });
 });
