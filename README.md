@@ -2,9 +2,6 @@
 
 Convert zod schemas to camel case keys
 
-> [!WARNING]
-> This is a work in progress, here be dragons 🐉
-
 ## Usage
 
 The `zodToCamelCase` supports both unidirectional and bidirectional transformation of schemas
