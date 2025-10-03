@@ -5,17 +5,19 @@ import { rewriteErrorPathsToCamel } from "./error";
 
 export { keysToCamelCase, keysToSnakeCase };
 
-type zodToCamelCaseOptionsTrue = {bidirectional: true};
-type zodToCamelCaseOptionsFalse = {bidirectional?: false};
-export type zodToCamelCaseOptions = {bidirectional?: boolean};
+type zodToCamelCaseOptionsTrue = { bidirectional: true };
+type zodToCamelCaseOptionsFalse = { bidirectional?: false };
+export type zodToCamelCaseOptions = { bidirectional?: boolean };
 
 export function zodToCamelCase<T extends ZodType>(
   schema: T,
   // Overload for 'true' condition
-  options: zodToCamelCaseOptionsTrue
-): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>>, 'parse' | 'safeParse'> & {
+  options: zodToCamelCaseOptionsTrue,
+): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>>, "parse" | "safeParse"> & {
   // Expecting camel-case input to parse
-  parse(input: ZodContribKeysToCamel<z.infer<T>>): ZodContribKeysToCamel<z.infer<T>>;
+  parse(
+    input: ZodContribKeysToCamel<z.infer<T>>,
+  ): ZodContribKeysToCamel<z.infer<T>>;
   // Expecting camel-case input to safeParse
   safeParse(input: ZodContribKeysToCamel<z.infer<T>>): {
     success: boolean;
@@ -27,8 +29,8 @@ export function zodToCamelCase<T extends ZodType>(
 export function zodToCamelCase<T extends ZodType>(
   schema: T,
   // Overload for 'false' and 'missing' condition
-  options?: zodToCamelCaseOptionsFalse
-): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>>, 'parse' | 'safeParse'> & {
+  options?: zodToCamelCaseOptionsFalse,
+): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>>, "parse" | "safeParse"> & {
   // Expecting snake-case-case input to parse
   parse(input: z.infer<T>): ZodContribKeysToCamel<z.infer<T>>;
   // Expecting snake-case-case input to safeParse
@@ -39,17 +41,21 @@ export function zodToCamelCase<T extends ZodType>(
   };
 };
 
-
-export function zodToCamelCase<T extends ZodType>(schema: T, options: zodToCamelCaseOptions={}) {
+export function zodToCamelCase<T extends ZodType>(
+  schema: T,
+  options: zodToCamelCaseOptions = {},
+) {
   const { bidirectional } = options;
   const newSchema = z
     .preprocess((input) => {
       if (bidirectional) {
-        return keysToSnakeCase(input as any)
+        return keysToSnakeCase(input as any);
       }
-      return input
+      return input;
     }, schema)
-    .transform((data) => keysToCamelCase(data) as ZodContribKeysToCamel<z.infer<T>>);
+    .transform(
+      (data) => keysToCamelCase(data) as ZodContribKeysToCamel<z.infer<T>>,
+    );
 
   return {
     ...newSchema,
@@ -71,7 +77,9 @@ export function zodToCamelCase<T extends ZodType>(schema: T, options: zodToCamel
       if (!result.success) {
         return {
           success: false as const,
-          error: bidirectional ? rewriteErrorPathsToCamel(result.error) : result.error,
+          error: bidirectional
+            ? rewriteErrorPathsToCamel(result.error)
+            : result.error,
         };
       }
       return {

@@ -12,7 +12,7 @@ describe("zodToCamelCaseOutput", () => {
         }),
       });
       const camelCaseSchema = zodToCamelCase(schema);
-      type Foo = z.infer<typeof camelCaseSchema>
+      type Foo = z.infer<typeof camelCaseSchema>;
       const results = camelCaseSchema.safeParse({
         key_one: "one",
         key_two: "two",
@@ -138,7 +138,7 @@ describe("zodToCamelCaseInputOutput", () => {
           foo_bar: z.number(),
         }),
       });
-      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
       const results = camelCaseSchema.safeParse({
         keyOne: "one",
         keyTwo: "two",
@@ -160,7 +160,7 @@ describe("zodToCamelCaseInputOutput", () => {
       const schema = z.object({
         key_one: z.string(),
       });
-      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
       const results = camelCaseSchema.safeParse({
         // @ts-expect-error
         keyTwo: "one",
@@ -192,7 +192,7 @@ describe("zodToCamelCaseInputOutput", () => {
           foo_bar: z.number(),
         }),
       });
-      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
       const results = camelCaseSchema.parse({
         keyOne: "one",
         keyTwo: "two",
@@ -213,7 +213,7 @@ describe("zodToCamelCaseInputOutput", () => {
       const schema = z.object({
         key_one: z.string(),
       });
-      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
       expect(() => {
         camelCaseSchema.parse({
           // @ts-expect-error
@@ -244,7 +244,7 @@ describe("zodToCamelCaseInputOutput", () => {
           return "";
         }),
       });
-      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
+      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
       expect(() => {
         camelCaseSchema.parse({
           keyOne: "one",
