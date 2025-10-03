@@ -1,6 +1,6 @@
 # zod-to-camel-case
 
-Convert zod schemas to camel case keys
+Convert zod schemas object keys to camel case.
 
 ## Usage
 

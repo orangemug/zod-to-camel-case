@@ -1,6 +1,6 @@
 {
   "name": "zod-to-camel-case",
-  "description": "Convert zod schemas to camel case keys",
+  "description": "Convert zod schemas object keys to camel case",
   "version": "0.2.2",
   "license": "MIT",
   "main": "./dist/npm/index.js",
