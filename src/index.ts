@@ -1,17 +1,19 @@
 import { z, ZodError, ZodType } from "zod";
-import { keysToCamel, keysToSnake } from "./format";
+import { keysToCamelCase, keysToSnakeCase } from "./format";
 import { ZodContribKeysToCamel } from "./types";
 import { rewriteErrorPathsToCamel } from "./error";
 
+export { keysToCamelCase, keysToSnakeCase };
+
 // Fully generic reusable function with internal type mapping
 export function zodToCamelCaseOutput<T extends ZodType>(schema: T) {
-  const newSchema = schema.transform((data) => keysToCamel(data));
+  const newSchema = schema.transform((data) => keysToCamelCase(data));
   return {
     ...newSchema,
     parse(input: z.infer<T>): ZodContribKeysToCamel<z.infer<T>> {
       try {
         const parsed = newSchema.parse(input);
-        return keysToCamel(parsed) as ZodContribKeysToCamel<z.infer<T>>;
+        return keysToCamelCase(parsed) as ZodContribKeysToCamel<z.infer<T>>;
       } catch (err) {
         throw err;
       }
@@ -23,7 +25,7 @@ export function zodToCamelCaseOutput<T extends ZodType>(schema: T) {
       }
       return {
         success: true as const,
-        data: keysToCamel(result.data) as ZodContribKeysToCamel<z.infer<T>>,
+        data: keysToCamelCase(result.data) as ZodContribKeysToCamel<z.infer<T>>,
       };
     },
   };
@@ -32,8 +34,8 @@ export function zodToCamelCaseOutput<T extends ZodType>(schema: T) {
 // Fully generic reusable function with internal type mapping
 export function zodToCamelCaseInputAndOutput<T extends ZodType>(schema: T) {
   const newSchema = z
-    .preprocess((input) => keysToSnake(input as any), schema)
-    .transform((data) => keysToCamel(data));
+    .preprocess((input) => keysToSnakeCase(input as any), schema)
+    .transform((data) => keysToCamelCase(data));
   return {
     ...newSchema,
     parse(
@@ -41,7 +43,7 @@ export function zodToCamelCaseInputAndOutput<T extends ZodType>(schema: T) {
     ): ZodContribKeysToCamel<z.infer<T>> {
       try {
         const parsed = newSchema.parse(input);
-        return keysToCamel(parsed) as ZodContribKeysToCamel<z.infer<T>>;
+        return keysToCamelCase(parsed) as ZodContribKeysToCamel<z.infer<T>>;
       } catch (err) {
         if (err instanceof ZodError) throw rewriteErrorPathsToCamel(err);
         throw err;
@@ -57,7 +59,7 @@ export function zodToCamelCaseInputAndOutput<T extends ZodType>(schema: T) {
       }
       return {
         success: true as const,
-        data: keysToCamel(result.data) as ZodContribKeysToCamel<z.infer<T>>,
+        data: keysToCamelCase(result.data) as ZodContribKeysToCamel<z.infer<T>>,
       };
     },
   };

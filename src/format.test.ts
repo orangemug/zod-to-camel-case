@@ -1,6 +1,11 @@
-import { camelToSnake, keysToCamel, keysToSnake, snakeToCamel } from "./format";
+import {
+  camelToSnakeCase,
+  keysToCamelCase,
+  keysToSnakeCase,
+  snakeToCamelCase,
+} from "./format";
 
-describe("snakeToCamel", () => {
+describe("snakeToCamelCase", () => {
   const TEST_CASES = [
     { input: "foo_bar_baz", expected: "fooBarBaz" },
     { input: "foo_bar__baz", expected: "fooBarBaz" },
@@ -12,12 +17,12 @@ describe("snakeToCamel", () => {
 
   for (const { input, expected } of TEST_CASES) {
     test(`${JSON.stringify(input)} -> ${JSON.stringify(expected)}`, () => {
-      expect(snakeToCamel(input)).toEqual(expected);
+      expect(snakeToCamelCase(input)).toEqual(expected);
     });
   }
 });
 
-describe("camelToSnake", () => {
+describe("camelToSnakeCase", () => {
   const TEST_CASES = [
     { input: "fooBarBaz", expected: "foo_bar_baz" },
     { input: "foo", expected: "foo" },
@@ -25,12 +30,12 @@ describe("camelToSnake", () => {
 
   for (const { input, expected } of TEST_CASES) {
     test(`${JSON.stringify(input)} -> ${JSON.stringify(expected)}`, () => {
-      expect(camelToSnake(input)).toEqual(expected);
+      expect(camelToSnakeCase(input)).toEqual(expected);
     });
   }
 });
 
-describe("keysToCamel", () => {
+describe("keysToCamelCase", () => {
   const TEST_CASES = [
     {
       name: "nested data",
@@ -57,13 +62,13 @@ describe("keysToCamel", () => {
     test(
       name ?? `${JSON.stringify(input)} -> ${JSON.stringify(expected)}`,
       () => {
-        expect(keysToCamel(input)).toEqual(expected);
+        expect(keysToCamelCase(input)).toEqual(expected);
       },
     );
   }
 });
 
-describe("keysToSnake", () => {
+describe("keysToSnakeCase", () => {
   const TEST_CASES = [
     {
       name: "nested data",
@@ -90,7 +95,7 @@ describe("keysToSnake", () => {
     test(
       name ?? `${JSON.stringify(input)} -> ${JSON.stringify(expected)}`,
       () => {
-        expect(keysToSnake(input)).toEqual(expected);
+        expect(keysToSnakeCase(input)).toEqual(expected);
       },
     );
   }
