@@ -1,10 +1,10 @@
 import z, { ZodError } from "zod";
-import { snakeToCamel } from "./format";
+import { snakeToCamelCase } from "./format";
 
 export function rewriteErrorPathsToCamel(error: ZodError<any>): ZodError<any> {
   const newIssues: z.core.$ZodIssue[] = error.issues.map((issue) => {
     const path = issue.path.map((segment) =>
-      typeof segment === "string" ? snakeToCamel(segment) : segment,
+      typeof segment === "string" ? snakeToCamelCase(segment) : segment,
     );
     return { ...issue, path };
   });
