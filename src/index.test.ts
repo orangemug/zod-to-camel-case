@@ -1,5 +1,5 @@
 import z from "zod";
-import { zodToCamelCaseOutput, zodToCamelCaseInputAndOutput } from "./";
+import { zodToCamelCase } from "./";
 
 describe("zodToCamelCaseOutput", () => {
   describe(".safeParse()", () => {
@@ -11,7 +11,8 @@ describe("zodToCamelCaseOutput", () => {
           foo_bar: z.number(),
         }),
       });
-      const camelCaseSchema = zodToCamelCaseOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema);
+      type Foo = z.infer<typeof camelCaseSchema>
       const results = camelCaseSchema.safeParse({
         key_one: "one",
         key_two: "two",
@@ -33,7 +34,7 @@ describe("zodToCamelCaseOutput", () => {
       const schema = z.object({
         key_one: z.string(),
       });
-      const camelCaseSchema = zodToCamelCaseOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema);
       const results = camelCaseSchema.safeParse({
         // @ts-expect-error
         key_two: "one",
@@ -65,7 +66,7 @@ describe("zodToCamelCaseOutput", () => {
           foo_bar: z.number(),
         }),
       });
-      const camelCaseSchema = zodToCamelCaseOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema);
       const results = camelCaseSchema.parse({
         key_one: "one",
         key_two: "two",
@@ -86,7 +87,7 @@ describe("zodToCamelCaseOutput", () => {
       const schema = z.object({
         key_one: z.string(),
       });
-      const camelCaseSchema = zodToCamelCaseOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema);
       expect(() => {
         camelCaseSchema.parse({
           // @ts-expect-error
@@ -117,7 +118,7 @@ describe("zodToCamelCaseOutput", () => {
           return "";
         }),
       });
-      const camelCaseSchema = zodToCamelCaseOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema);
       expect(() => {
         camelCaseSchema.parse({
           key_one: "one",
@@ -137,7 +138,7 @@ describe("zodToCamelCaseInputOutput", () => {
           foo_bar: z.number(),
         }),
       });
-      const camelCaseSchema = zodToCamelCaseInputAndOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
       const results = camelCaseSchema.safeParse({
         keyOne: "one",
         keyTwo: "two",
@@ -159,7 +160,7 @@ describe("zodToCamelCaseInputOutput", () => {
       const schema = z.object({
         key_one: z.string(),
       });
-      const camelCaseSchema = zodToCamelCaseInputAndOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
       const results = camelCaseSchema.safeParse({
         // @ts-expect-error
         keyTwo: "one",
@@ -191,7 +192,7 @@ describe("zodToCamelCaseInputOutput", () => {
           foo_bar: z.number(),
         }),
       });
-      const camelCaseSchema = zodToCamelCaseInputAndOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
       const results = camelCaseSchema.parse({
         keyOne: "one",
         keyTwo: "two",
@@ -212,7 +213,7 @@ describe("zodToCamelCaseInputOutput", () => {
       const schema = z.object({
         key_one: z.string(),
       });
-      const camelCaseSchema = zodToCamelCaseInputAndOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
       expect(() => {
         camelCaseSchema.parse({
           // @ts-expect-error
@@ -243,7 +244,7 @@ describe("zodToCamelCaseInputOutput", () => {
           return "";
         }),
       });
-      const camelCaseSchema = zodToCamelCaseInputAndOutput(schema);
+      const camelCaseSchema = zodToCamelCase(schema, {bidirectional: true});
       expect(() => {
         camelCaseSchema.parse({
           keyOne: "one",
