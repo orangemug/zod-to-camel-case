@@ -11,10 +11,13 @@ export function keysToSnake<T>(obj: T): any {
   return obj;
 }
 
-export const snakeToCamel = (str: string) =>
-  str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+export const snakeToCamel = (str: string) => {
+  return str
+    .replace(/^_+/, "")
+    .replace(/_+([a-z])/g, (_, c) => c.toUpperCase())
+    .replace(/_+$/, "");
+};
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export function keysToCamel<T>(obj: T): any {
   if (Array.isArray(obj)) return obj.map(keysToCamel);
   if (obj !== null && typeof obj === "object") {
