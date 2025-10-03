@@ -96,11 +96,19 @@ assert.deepEqual(results, {
 
 ## Test
 
-[![codecov](https://codecov.io/github/orangemug/zod-to-camel-case/graph/badge.svg?token=00EOGLB2HF)](https://codecov.io/github/orangemug/zod-to-camel-case)
+To run the tests run, in non-watch mode the coverage reports are available at `./coverage/lcov-report/index.html`
 
 ```bash
 npm test
 ```
+
+Or for watch mode (no coverage reports)
+
+```bash
+npm run test:watch
+```
+
+[![codecov](https://codecov.io/github/orangemug/zod-to-camel-case/graph/badge.svg?token=00EOGLB2HF)](https://codecov.io/github/orangemug/zod-to-camel-case)
 
 ## License
 

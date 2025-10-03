@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "npx prettier . --check",
     "test": "jest --coverage --verbose",
+    "test:watch": "jest --watch",
     "lint:format": "npx prettier . --write",
     "build": "npm run build:npm",
     "build:npm": "rollup -c rollup.config.ts --configPlugin typescript"
