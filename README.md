@@ -5,26 +5,30 @@ Convert zod schemas to camel case keys
 > [!WARNING]
 > This is a work in progress, here be dragons 🐉
 
-Here is an example
+## Usage
+
+The `zodToCamelCase` supports both unidirectional and bidirectional transformation of schemas
+
+### `zodToCamelCase` (unidirectional)
+
+By default `zodToCamelCase` supports unidirectional transformation of the schema.
+
+So the input will be expected to in the original snake-case format. The output data/type will be camel-case.
 
 ```ts
 import { z } from "zod";
 import zodToCamelCase from "zod-to-camel-case";
 
-// Original schema
-const schema = z.object({
+const userSchemaSnake = z.object({
   full_name: z.string(),
   user: z.object({
     email_addresses: z.array(z.email()),
   }),
 });
-
-// Convert the schema
-// Note: Use `zodToCamelCaseOutput` for uni-directional
-const camelCaseSchema = zodToCamelCaseInputAndOutput(schema);
+const userSchema = zodToCamelCase(userSchemaSnake);
 
 // Infer the type using zod
-type Foo = z.infer<typeof camelCaseSchema>; /**
+type User = z.infer<typeof userSchema>; /**
  * {
  *   fullName: string;
  *   user: {
@@ -33,7 +37,59 @@ type Foo = z.infer<typeof camelCaseSchema>; /**
  * }
  */
 
-const results = camelCaseSchema.parse({
+// This input is snake-case
+const results = userSchema.parse({
+  full_name: "Turanga Leela",
+  user: {
+    email_addresses: ["name@example.com"],
+  },
+});
+
+// The output is camel-case
+assert.deepEqual(results, {
+  fullName: "Turanga Leela",
+  user: {
+    emailAddresses: ["name@example.com"],
+  },
+});
+```
+
+### `zodToCamelCase` (bidirectional)
+
+By passing `{bidirectional: true}` as a second option to `zodToCamelCase` will change the expected input to be snake-case.
+
+```ts
+import { z } from "zod";
+import zodToCamelCase from "zod-to-camel-case";
+
+const userSchemaSnake = z.object({
+  full_name: z.string(),
+  user: z.object({
+    email_addresses: z.array(z.email()),
+  }),
+});
+const userSchema = zodToCamelCase(userSchemaSnake, { bidirectional: true });
+
+// Infer the type using zod
+type User = z.infer<typeof userSchema>; /**
+ * {
+ *   fullName: string;
+ *   user: {
+ *     emailAddresses: string[];
+ *   }
+ * }
+ */
+
+// This input is snake-case
+const results = userSchema.parse({
+  fullName: "Turanga Leela",
+  user: {
+    emailAddresses: ["name@example.com"],
+  },
+});
+
+// The output is camel-case
+assert.deepEqual(results, {
   fullName: "Turanga Leela",
   user: {
     emailAddresses: ["name@example.com"],
