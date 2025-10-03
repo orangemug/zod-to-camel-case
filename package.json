@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "lint": "npx prettier . --check",
-    "test": "jest --coverage",
+    "test": "jest --coverage --verbose",
     "lint:format": "npx prettier . --write",
     "build": "npm run build:npm",
     "build:npm": "rollup -c rollup.config.ts --configPlugin typescript"
