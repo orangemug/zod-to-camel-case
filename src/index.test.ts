@@ -1,5 +1,5 @@
 import z from "zod";
-import { zodToCamelCase } from "./";
+import zodToCamelCase from "./";
 import { describe, expect, expectTypeOf, test } from "vitest";
 
 describe("zodToCamelCase (unidirectional)", () => {

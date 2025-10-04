@@ -19,7 +19,7 @@ type safeParse<Input, T> = (input: Input) => {
 };
 
 // zodToCamelCase (unidirectional)
-export function zodToCamelCase<T extends ZodType>(
+export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   // Overload for 'true' condition
   options: { bidirectional: true },
@@ -31,7 +31,7 @@ export function zodToCamelCase<T extends ZodType>(
 };
 
 // zodToCamelCase (bidirectional)
-export function zodToCamelCase<T extends ZodType>(
+export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   // Overload for 'false' and 'missing' condition
   options?: { bidirectional?: false },
@@ -43,7 +43,7 @@ export function zodToCamelCase<T extends ZodType>(
 };
 
 // zodToCamelCase
-export function zodToCamelCase<T extends ZodType>(
+export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   options: zodToCamelCaseOptions = {},
 ) {
