@@ -25,14 +25,8 @@ const userSchemaSnake = z.object({
 const userSchema = zodToCamelCase(userSchemaSnake);
 
 // Infer the type using zod
-type User = z.infer<typeof userSchema>; /**
- * {
- *   fullName: string;
- *   user: {
- *     emailAddresses: string[];
- *   }
- * }
- */
+type User = z.infer<typeof userSchema>;
+// type => { fullName: string, user: { emailAddresses: string[] } }
 
 // This input is snake-case
 const results = userSchema.parse({
@@ -42,8 +36,8 @@ const results = userSchema.parse({
   },
 });
 
-// The output is camel-case
-assert.deepEqual(results, {
+// Asert that the output is camel-case
+expect(results).toEqual({
   fullName: "Turanga Leela",
   user: {
     emailAddresses: ["name@example.com"],
@@ -68,16 +62,10 @@ const userSchemaSnake = z.object({
 const userSchema = zodToCamelCase(userSchemaSnake, { bidirectional: true });
 
 // Infer the type using zod
-type User = z.infer<typeof userSchema>; /**
- * {
- *   fullName: string;
- *   user: {
- *     emailAddresses: string[];
- *   }
- * }
- */
+type User = z.infer<typeof userSchema>;
+// type => { fullName: string, user: { emailAddresses: string[] } }
 
-// This input is snake-case
+// This input is camel-case
 const results = userSchema.parse({
   fullName: "Turanga Leela",
   user: {
@@ -85,8 +73,8 @@ const results = userSchema.parse({
   },
 });
 
-// The output is camel-case
-assert.deepEqual(results, {
+// Asert that the output is camel-case
+expect(results).toEqual({
   fullName: "Turanga Leela",
   user: {
     emailAddresses: ["name@example.com"],
