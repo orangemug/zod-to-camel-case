@@ -47,7 +47,7 @@ expect(results).toEqual({
 
 ### `zodToCamelCase` (bidirectional)
 
-By passing `{bidirectional: true}` as a second option to `zodToCamelCase` will change the expected input to be snake-case.
+By passing `{bidirectional: true}` as a second option to `zodToCamelCase` will change the expected input to be camel-case.
 
 ```ts
 import { z } from "zod";
@@ -66,6 +66,7 @@ type User = z.infer<typeof userSchema>;
 // type => { fullName: string, user: { emailAddresses: string[] } }
 
 // This input is camel-case
+// **IMPORTANT**: The input to parse() & safeParse() is now camel case
 const results = userSchema.parse({
   fullName: "Turanga Leela",
   user: {

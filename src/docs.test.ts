@@ -47,6 +47,7 @@ describe("docs", () => {
     // type => { fullName: string, user: { emailAddresses: string[] } }
 
     // This input is camel-case
+    // **IMPORTANT**: The input to parse() & safeParse() is now camel case
     const results = userSchema.parse({
       fullName: "Turanga Leela",
       user: {
