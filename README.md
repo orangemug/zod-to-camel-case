@@ -4,13 +4,13 @@ Convert zod schema object keys to camel case.
 
 ## Usage
 
-The `zodToCamelCase` supports both unidirectional and bidirectional transformation of schemas
+The `zodToCamelCase` supports both unidirectional and bidirectional transformation of zod schemas
 
 ### `zodToCamelCase` (unidirectional)
 
 By default `zodToCamelCase` supports unidirectional transformation of the schema.
 
-So the input will be expected to in the original snake-case format. The output data/type will be camel-case.
+So the input will be expected to in the original snake-case format. The output data/type will still be camel-case.
 
 ```ts
 import { z } from "zod";
