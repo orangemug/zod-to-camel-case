@@ -40,14 +40,16 @@ describe("docs", () => {
         email_addresses: z.array(z.email()),
       }),
     });
-    const userSchema = zodToCamelCase(userSchemaSnake, { bidirectional: true });
+    const userSchema = zodToCamelCase(userSchemaSnake, {
+      bidirectional: true, // ‼️ enabling bidirectional mode
+    });
 
     // Infer the type using zod
     type User = z.infer<typeof userSchema>;
     // type => { fullName: string, user: { emailAddresses: string[] } }
 
     // This input is camel-case
-    // **IMPORTANT**: The input to parse() & safeParse() is now camel case
+    // 🎉 The input to parse() & safeParse() is now camel case
     const results = userSchema.parse({
       fullName: "Turanga Leela",
       user: {

@@ -1,6 +1,6 @@
 # zod-to-camel-case
 
-Convert zod schemas object keys to camel case.
+Convert zod schema object keys to camel case.
 
 ## Usage
 
@@ -60,7 +60,7 @@ const userSchemaSnake = z.object({
   }),
 });
 const userSchema = zodToCamelCase(userSchemaSnake, {
-  bidirectional: true // ‼️ enabling bidirectional mode
+  bidirectional: true, // ‼️ enabling bidirectional mode
 });
 
 // Infer the type using zod
