@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "npx prettier . --check",
     "test": "vitest run --coverage",
+    "test:watch": "vitest run --watch",
     "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
     "lint:format": "npx prettier . --write",
     "build": "npm run build:npm",
