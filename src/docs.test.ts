@@ -24,7 +24,7 @@ describe("docs", () => {
       },
     });
 
-    // Asert that the output is camel-case
+    // Assert that the output is camel-case
     expect(results).toEqual({
       fullName: "Turanga Leela",
       user: {
@@ -54,7 +54,7 @@ describe("docs", () => {
       },
     });
 
-    // Asert that the output is camel-case
+    // Assert that the output is camel-case
     expect(results).toEqual({
       fullName: "Turanga Leela",
       user: {

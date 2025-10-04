@@ -36,7 +36,7 @@ const results = userSchema.parse({
   },
 });
 
-// Asert that the output is camel-case
+// Assert that the output is camel-case
 expect(results).toEqual({
   fullName: "Turanga Leela",
   user: {
@@ -73,7 +73,7 @@ const results = userSchema.parse({
   },
 });
 
-// Asert that the output is camel-case
+// Assert that the output is camel-case
 expect(results).toEqual({
   fullName: "Turanga Leela",
   user: {
