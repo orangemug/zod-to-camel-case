@@ -1,7 +1,64 @@
 import z from "zod";
 import { zodToCamelCase } from "./";
+import { describe, expect, expectTypeOf, test } from "vitest";
 
 describe("zodToCamelCase (unidirectional)", () => {
+  describe("schema types", () => {
+    test("basic types", () => {
+      const schema = z.object({
+        key_one: z.string(),
+        key_two: z.string(),
+        additional_props: z.object({
+          foo_bar: z.number(),
+        }),
+      });
+      const camelCase = zodToCamelCase(schema);
+
+      expectTypeOf<z.infer<typeof schema>>().toMatchObjectType<{
+        key_one: string;
+        key_two: string;
+        additional_props: {
+          foo_bar: number;
+        };
+      }>();
+
+      expectTypeOf<z.infer<typeof camelCase>>().toMatchObjectType<{
+        keyOne: string;
+        keyTwo: string;
+        additionalProps: {
+          fooBar: number;
+        };
+      }>();
+    });
+
+    test("optional/nullable types", () => {
+      const schema = z.object({
+        key_one: z.string().optional(),
+        key_two: z.string().nullable(),
+        additional_props: z.object({
+          foo_bar: z.number().optional(),
+        }),
+      });
+      const camelCase = zodToCamelCase(schema);
+
+      expectTypeOf<z.infer<typeof schema>>().toMatchObjectType<{
+        key_one?: string;
+        key_two: string | null;
+        additional_props: {
+          foo_bar?: number;
+        };
+      }>();
+
+      expectTypeOf<z.infer<typeof camelCase>>().toMatchObjectType<{
+        keyOne?: string;
+        keyTwo: string | null;
+        additionalProps: {
+          fooBar?: number;
+        };
+      }>();
+    });
+  });
+
   describe(".safeParse()", () => {
     test("valid nested data", () => {
       const schema = z.object({
@@ -107,19 +164,17 @@ describe("zodToCamelCase (unidirectional)", () => {
           key_two: "one",
         });
       }).toThrow(
-        new Error(
-          JSON.stringify(
-            [
-              {
-                expected: "string",
-                code: "invalid_type",
-                path: ["key_one"],
-                message: "Invalid input: expected string, received undefined",
-              },
-            ],
-            null,
-            2,
-          ),
+        JSON.stringify(
+          [
+            {
+              expected: "string",
+              code: "invalid_type",
+              path: ["key_one"],
+              message: "Invalid input: expected string, received undefined",
+            },
+          ],
+          null,
+          2,
         ),
       );
     });
@@ -156,6 +211,62 @@ describe("zodToCamelCase (unidirectional)", () => {
 });
 
 describe("zodToCamelCase (bidirectional)", () => {
+  describe("schema types", () => {
+    test("basic types", () => {
+      const schema = z.object({
+        key_one: z.string(),
+        key_two: z.string(),
+        additional_props: z.object({
+          foo_bar: z.number(),
+        }),
+      });
+      const camelCase = zodToCamelCase(schema, { bidirectional: true });
+
+      expectTypeOf<z.infer<typeof schema>>().toMatchObjectType<{
+        key_one: string;
+        key_two: string;
+        additional_props: {
+          foo_bar: number;
+        };
+      }>();
+
+      expectTypeOf<z.infer<typeof camelCase>>().toMatchObjectType<{
+        keyOne: string;
+        keyTwo: string;
+        additionalProps: {
+          fooBar: number;
+        };
+      }>();
+    });
+
+    test("optional/nullable types", () => {
+      const schema = z.object({
+        key_one: z.string().optional(),
+        key_two: z.string().nullable(),
+        additional_props: z.object({
+          foo_bar: z.number().optional(),
+        }),
+      });
+      const camelCase = zodToCamelCase(schema);
+
+      expectTypeOf<z.infer<typeof schema>>().toMatchObjectType<{
+        key_one?: string;
+        key_two: string | null;
+        additional_props: {
+          foo_bar?: number;
+        };
+      }>();
+
+      expectTypeOf<z.infer<typeof camelCase>>().toMatchObjectType<{
+        keyOne?: string;
+        keyTwo: string | null;
+        additionalProps: {
+          fooBar?: number;
+        };
+      }>();
+    });
+  });
+
   describe(".safeParse()", () => {
     test("valid nested data", () => {
       const schema = z.object({
@@ -261,19 +372,17 @@ describe("zodToCamelCase (bidirectional)", () => {
           keyTwo: "one",
         });
       }).toThrow(
-        new Error(
-          JSON.stringify(
-            [
-              {
-                expected: "string",
-                code: "invalid_type",
-                path: ["keyOne"],
-                message: "Invalid input: expected string, received undefined",
-              },
-            ],
-            null,
-            2,
-          ),
+        JSON.stringify(
+          [
+            {
+              expected: "string",
+              code: "invalid_type",
+              path: ["keyOne"],
+              message: "Invalid input: expected string, received undefined",
+            },
+          ],
+          null,
+          2,
         ),
       );
     });
