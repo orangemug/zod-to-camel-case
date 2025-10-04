@@ -96,7 +96,7 @@ assert.deepEqual(results, {
 
 ## Test
 
-To run the tests run, in non-watch mode the coverage reports are available at `./coverage/lcov-report/index.html`
+To run the tests run, in non-watch mode the coverage reports are available at `./coverage/index.html`
 
 ```bash
 npm test
