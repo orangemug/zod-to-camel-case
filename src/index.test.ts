@@ -255,7 +255,7 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(camelParsedData).toEqual(camelData);
   });
 
-  it.only("converts a nested snake_case schema to camelCase", () => {
+  it("converts a nested snake_case schema to camelCase", () => {
     const nested_schema = z.object({
       test_param: z.string(),
       nested_param: z.object({
