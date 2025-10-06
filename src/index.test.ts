@@ -328,7 +328,7 @@ describe("zodToCamelCase (unidirectional)", () => {
 
     const simpleItem = keysToCamelCase(simple_item);
 
-    expect(() => unionSchema.parse({ testParam: simpleItem })).not.toThrow();
+    expect(() => unionSchema.parse({test_param: simpleItem })).not.toThrow();
   });
 
   it("can convert an object with a url property originally defined as a url and then extended as string", () => {
