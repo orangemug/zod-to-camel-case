@@ -1,49 +1,76 @@
 import { z, ZodError, ZodType } from "zod";
-import { keysToCamel, keysToSnake } from "./format";
-import { ZodContribKeysToCamel } from "./types";
+import { keysToCamelCase, keysToSnakeCase } from "./format";
+import { ZodContribSnakeToCamel, ZodContribKeysToCamel } from "./types";
 import { rewriteErrorPathsToCamel } from "./error";
 
-// Fully generic reusable function with internal type mapping
-export function zodToCamelCaseOutput<T extends ZodType>(schema: T) {
-  const newSchema = schema.transform((data) => keysToCamel(data));
-  return {
-    ...newSchema,
-    parse(input: z.infer<T>): ZodContribKeysToCamel<z.infer<T>> {
-      try {
-        const parsed = newSchema.parse(input);
-        return keysToCamel(parsed) as ZodContribKeysToCamel<z.infer<T>>;
-      } catch (err) {
-        throw err;
-      }
-    },
-    safeParse(input: z.infer<T>) {
-      const result = newSchema.safeParse(input);
-      if (!result.success) {
-        return { success: false as const, error: result.error };
-      }
-      return {
-        success: true as const,
-        data: keysToCamel(result.data) as ZodContribKeysToCamel<z.infer<T>>,
-      };
-    },
-  };
-}
+export { keysToCamelCase, keysToSnakeCase };
+export type { ZodContribSnakeToCamel, ZodContribKeysToCamel };
 
-// Fully generic reusable function with internal type mapping
-export function zodToCamelCaseInputAndOutput<T extends ZodType>(schema: T) {
+export type zodToCamelCaseOptions = { bidirectional?: boolean };
+
+// parse(...) with optional `Input` type
+type parse<Input, T> = (input: Input) => ZodContribKeysToCamel<z.infer<T>>;
+
+// safeParse(...) with optional `Input` type
+type safeParse<Input, T> = (input: Input) => {
+  success: boolean;
+  data?: ZodContribKeysToCamel<z.infer<T>>;
+  error?: any;
+};
+
+// zodToCamelCase (unidirectional)
+export default function zodToCamelCase<T extends ZodType>(
+  schema: T,
+  // Overload for 'true' condition
+  options: { bidirectional: true },
+): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>>, "parse" | "safeParse"> & {
+  // Expecting snake-case-case input to parse
+  parse: parse<ZodContribKeysToCamel<z.infer<T>>, T>;
+  // Expecting snake-case-case input to safeParse
+  safeParse: safeParse<ZodContribKeysToCamel<z.infer<T>>, T>;
+};
+
+// zodToCamelCase (bidirectional)
+export default function zodToCamelCase<T extends ZodType>(
+  schema: T,
+  // Overload for 'false' and 'missing' condition
+  options?: { bidirectional?: false },
+): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>>, "parse" | "safeParse"> & {
+  // Expecting snake-case-case input to parse
+  parse: parse<z.infer<T>, T>;
+  // Expecting snake-case-case input to safeParse
+  safeParse: safeParse<z.infer<T>, T>;
+};
+
+// zodToCamelCase
+export default function zodToCamelCase<T extends ZodType>(
+  schema: T,
+  options: zodToCamelCaseOptions = {},
+) {
+  const { bidirectional = false } = options;
   const newSchema = z
-    .preprocess((input) => keysToSnake(input as any), schema)
-    .transform((data) => keysToCamel(data));
+    .preprocess((input) => {
+      if (bidirectional) {
+        return keysToSnakeCase(input as any);
+      }
+      return input;
+    }, schema)
+    .transform(
+      (data) => keysToCamelCase(data) as ZodContribKeysToCamel<z.infer<T>>,
+    );
+
   return {
     ...newSchema,
-    parse(
-      input: ZodContribKeysToCamel<z.infer<T>>,
-    ): ZodContribKeysToCamel<z.infer<T>> {
+    parse: (
+      input: ZodContribKeysToCamel<z.infer<T>> | z.infer<T>,
+    ): ZodContribKeysToCamel<z.infer<T>> => {
       try {
         const parsed = newSchema.parse(input);
-        return keysToCamel(parsed) as ZodContribKeysToCamel<z.infer<T>>;
+        return keysToCamelCase(parsed) as ZodContribKeysToCamel<z.infer<T>>;
       } catch (err) {
-        if (err instanceof ZodError) throw rewriteErrorPathsToCamel(err);
+        if (bidirectional && err instanceof ZodError) {
+          throw rewriteErrorPathsToCamel(err);
+        }
         throw err;
       }
     },
@@ -52,12 +79,14 @@ export function zodToCamelCaseInputAndOutput<T extends ZodType>(schema: T) {
       if (!result.success) {
         return {
           success: false as const,
-          error: rewriteErrorPathsToCamel(result.error),
+          error: bidirectional
+            ? rewriteErrorPathsToCamel(result.error)
+            : result.error,
         };
       }
       return {
         success: true as const,
-        data: keysToCamel(result.data) as ZodContribKeysToCamel<z.infer<T>>,
+        data: keysToCamelCase(result.data) as ZodContribKeysToCamel<z.infer<T>>,
       };
     },
   };
