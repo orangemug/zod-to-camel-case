@@ -132,8 +132,8 @@ describe("zodToCamelCase (unidirectional)", () => {
             },
           ],
           null,
-          2
-        )
+          2,
+        ),
       );
     });
 
@@ -199,8 +199,8 @@ describe("zodToCamelCase (unidirectional)", () => {
             },
           ],
           null,
-          2
-        )
+          2,
+        ),
       );
     });
 
@@ -328,7 +328,7 @@ describe("zodToCamelCase (unidirectional)", () => {
 
     const simpleItem = keysToCamelCase(simple_item);
 
-    expect(() => unionSchema.parse({test_param: simpleItem })).not.toThrow();
+    expect(() => unionSchema.parse({ test_param: simpleItem })).not.toThrow();
   });
 
   it("can convert an object with a url property originally defined as a url and then extended as string", () => {
@@ -494,8 +494,8 @@ describe("zodToCamelCase (bidirectional)", () => {
             },
           ],
           null,
-          2
-        )
+          2,
+        ),
       );
     });
 
@@ -561,8 +561,8 @@ describe("zodToCamelCase (bidirectional)", () => {
             },
           ],
           null,
-          2
-        )
+          2,
+        ),
       );
     });
 
