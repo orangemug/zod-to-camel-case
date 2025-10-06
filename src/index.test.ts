@@ -1,6 +1,6 @@
 import z from "zod";
 import { zodToCamelCaseOutput, zodToCamelCaseInputAndOutput } from "./";
-import { keysToCamelCase } from "./testUtils";
+import { keysToCamel } from "./format";
 
 const complex_schema = z
   .object({
@@ -93,7 +93,7 @@ describe("zodToCamelCaseOutput", () => {
     const camelCaseSchema = zodToCamelCaseOutput(snake_case_schema);
     const camelParsedData = camelCaseSchema.parse(snake_data);
 
-    const camelData = keysToCamelCase(snake_data);
+    const camelData = keysToCamel(snake_data);
 
     expect(camelParsedData).toEqual(camelData);
   });
@@ -115,7 +115,7 @@ describe("zodToCamelCaseOutput", () => {
 
     expect(nested_schema.parse(nested_data)).toEqual(nested_data);
 
-    const camelData = keysToCamelCase(nested_data);
+    const camelData = keysToCamel(nested_data);
 
     const camelCaseSchema = zodToCamelCaseInputAndOutput(nested_schema);
 
@@ -135,7 +135,7 @@ describe("zodToCamelCaseOutput", () => {
 
     expect(optional_schema.parse(optional_data)).toEqual(optional_data);
 
-    const camelData = keysToCamelCase(optional_data);
+    const camelData = keysToCamel(optional_data);
 
     const camelCaseSchema = zodToCamelCaseInputAndOutput(optional_schema);
 
@@ -169,7 +169,7 @@ describe("zodToCamelCaseOutput", () => {
 
     expect(() => union_schema.parse({ test_param: simple_item })).not.toThrow();
 
-    const simpleItem = keysToCamelCase(simple_item);
+    const simpleItem = keysToCamel(simple_item);
 
     expect(() => unionSchema.parse({ testParam: simpleItem })).not.toThrow();
   });
@@ -212,7 +212,7 @@ describe("zodToCamelCaseOutput", () => {
 
     const camelSchema = zodToCamelCaseInputAndOutput(schema);
 
-    const camelData = keysToCamelCase(data);
+    const camelData = keysToCamel(data);
 
     expect(camelSchema.parse(camelData)).toEqual(camelData);
   });
@@ -226,7 +226,7 @@ describe("zodToCamelCaseOutput", () => {
 
     const camelSchema = zodToCamelCaseInputAndOutput(tupleSchema);
 
-    const camelData = keysToCamelCase(data);
+    const camelData = keysToCamel(data);
 
     expect(camelSchema.parse(camelData)).toEqual(camelData);
   });
