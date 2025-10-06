@@ -15,6 +15,11 @@ describe("types", () => {
     expectTypeOf<ZodContribSnakeToCamel<"foo__">>().toEqualTypeOf<"foo">();
     expectTypeOf<ZodContribSnakeToCamel<"foo_">>().toEqualTypeOf<"foo">();
     expectTypeOf<ZodContribSnakeToCamel<"__foo_">>().toEqualTypeOf<"foo">();
+    expectTypeOf<ZodContribSnakeToCamel<"__ID_">>().toEqualTypeOf<"id">();
+    expectTypeOf<ZodContribSnakeToCamel<"fooBarBaz">>().toEqualTypeOf<"foobarbaz">();
+    expectTypeOf<ZodContribSnakeToCamel<"c$fé">>().toEqualTypeOf<"c$fé">();
+    expectTypeOf<ZodContribSnakeToCamel<"c_$fé">>().toEqualTypeOf<"c$fé">();
+    expectTypeOf<ZodContribSnakeToCamel<"some_c$fé">>().toEqualTypeOf<"someC$fé">();
   });
 
   describe("ZodContribKeysToCamel", () => {

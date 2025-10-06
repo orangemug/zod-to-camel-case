@@ -39,15 +39,20 @@ describe("zodToCamelCase (unidirectional)", () => {
       });
       const camelCase = zodToCamelCase(schema);
 
-      expectTypeOf<z.infer<typeof schema>>().toMatchObjectType<{
+      type InputType = {
         key_one: string;
         key_two: string;
         additional_props: {
           foo_bar: number;
         };
-      }>();
+      }
 
-      expectTypeOf<z.infer<typeof camelCase>>().toMatchObjectType<{
+      expectTypeOf<z.infer<typeof schema>>().toEqualTypeOf<InputType>();
+
+      expectTypeOf<Parameters<typeof camelCase["parse"]>[0]>().toEqualTypeOf<InputType>();
+      expectTypeOf<Parameters<typeof camelCase["safeParse"]>[0]>().toEqualTypeOf<InputType>();
+
+      expectTypeOf<z.infer<typeof camelCase>>().toEqualTypeOf<{
         keyOne: string;
         keyTwo: string;
         additionalProps: {
@@ -66,15 +71,20 @@ describe("zodToCamelCase (unidirectional)", () => {
       });
       const camelCase = zodToCamelCase(schema);
 
-      expectTypeOf<z.infer<typeof schema>>().toMatchObjectType<{
+      type InputType = {
         key_one?: string;
         key_two: string | null;
         additional_props: {
           foo_bar?: number;
         };
-      }>();
+      }
 
-      expectTypeOf<z.infer<typeof camelCase>>().toMatchObjectType<{
+      expectTypeOf<z.infer<typeof schema>>().toEqualTypeOf<InputType>();
+
+      expectTypeOf<Parameters<typeof camelCase["parse"]>[0]>().toEqualTypeOf<InputType>();
+      expectTypeOf<Parameters<typeof camelCase["safeParse"]>[0]>().toEqualTypeOf<InputType>();
+
+      expectTypeOf<z.infer<typeof camelCase>>().toEqualTypeOf<{
         keyOne?: string;
         keyTwo: string | null;
         additionalProps: {
@@ -84,31 +94,75 @@ describe("zodToCamelCase (unidirectional)", () => {
     });
   });
 
-  describe(".safeParse()", () => {
-    test("valid nested data", () => {
-      const schema = z.object({
-        key_one: z.string(),
-        key_two: z.string(),
-        additional_props: z.object({
-          foo_bar: z.number(),
+  test("union types", () => {
+    const schema = z.object({
+      test: z.string().nullable(),
+      union_type: z.union([
+        z.object({
+          foo_bar: z.number().optional(),
         }),
+        z.object({
+          bar_baz: z.number().optional(),
+        }),
+      ])
+    });
+    const camelCase = zodToCamelCase(schema);
+
+    type InputType = {
+      test: string | null;
+      union_type: {
+        foo_bar?: number | undefined;
+      } | {
+        bar_baz?: number | undefined;
+      };
+    }
+
+    expectTypeOf<z.infer<typeof schema>>().toEqualTypeOf<InputType>();
+
+    expectTypeOf<Parameters<typeof camelCase["parse"]>[0]>().toEqualTypeOf<InputType>();
+    expectTypeOf<Parameters<typeof camelCase["safeParse"]>[0]>().toEqualTypeOf<InputType>();
+
+    expectTypeOf<z.infer<typeof camelCase>>().toEqualTypeOf<{
+      test: string | null;
+      unionType: {
+        fooBar?: number | undefined;
+      } | {
+        barBaz?: number | undefined;
+      };
+    }>();
+  });
+
+  describe(".safeParse()", () => {
+    test("Object key clash", () => {
+      const schema = z.object({
+        _foo: z.string(),
+        foo_: z.string(),
+        foo__: z.string(),
       });
-      const camelCaseSchema = zodToCamelCase(schema);
-      const results = camelCaseSchema.safeParse({
-        key_one: "one",
-        key_two: "two",
-        additional_props: {
-          foo_bar: 4,
-        },
+      expect(() => {
+        zodToCamelCase(schema, {bidirectional: true})
+      }).toThrow(new Error(`conflicting keys: "_foo", "foo_" & "foo__"`));
+    });
+
+    test("Object key clash within union", () => {
+      const schema = z.union([
+        z.object({_foo: z.string()}),
+        z.object({foo_: z.string(), _foo: z.string()}),
+        z.object({foo__: z.string()}),
+      ]);
+      expect(() => {
+        zodToCamelCase(schema, {bidirectional: true})
+      }).toThrow(new Error(`conflicting keys: "foo_" & "_foo"`));
+    });
+
+    test("Test for clashed", () => {
+      const schema = z.object({
+        _foo: z.string(),
+        foo_: z.string(),
       });
-      expect(results.success).toEqual(true);
-      expect(results.data).toEqual({
-        keyOne: "one",
-        keyTwo: "two",
-        additionalProps: {
-          fooBar: 4,
-        },
-      });
+      expect(() => {
+        zodToCamelCase(schema)
+      }).toThrow(new Error(`conflicting keys: "_foo" & "foo_"`));
     });
 
     test("parse errors are remapped", () => {
@@ -437,7 +491,7 @@ describe("zodToCamelCase (bidirectional)", () => {
       });
       const camelCase = zodToCamelCase(schema, { bidirectional: true });
 
-      expectTypeOf<z.infer<typeof schema>>().toMatchObjectType<{
+      expectTypeOf<z.infer<typeof schema>>().toEqualTypeOf<{
         key_one: string;
         key_two: string;
         additional_props: {
@@ -445,13 +499,16 @@ describe("zodToCamelCase (bidirectional)", () => {
         };
       }>();
 
-      expectTypeOf<z.infer<typeof camelCase>>().toMatchObjectType<{
+      type OutputType = {
         keyOne: string;
         keyTwo: string;
         additionalProps: {
           fooBar: number;
         };
-      }>();
+      }
+      expectTypeOf<Parameters<typeof camelCase["parse"]>[0]>().toEqualTypeOf<OutputType>();
+      expectTypeOf<Parameters<typeof camelCase["safeParse"]>[0]>().toEqualTypeOf<OutputType>();
+      expectTypeOf<z.infer<typeof camelCase>>().toEqualTypeOf<OutputType>();
     });
 
     test("optional/nullable types", () => {
@@ -462,9 +519,9 @@ describe("zodToCamelCase (bidirectional)", () => {
           foo_bar: z.number().optional(),
         }),
       });
-      const camelCase = zodToCamelCase(schema);
+      const camelCase = zodToCamelCase(schema, {bidirectional: true});
 
-      expectTypeOf<z.infer<typeof schema>>().toMatchObjectType<{
+      expectTypeOf<z.infer<typeof schema>>().toEqualTypeOf<{
         key_one?: string;
         key_two: string | null;
         additional_props: {
@@ -472,14 +529,55 @@ describe("zodToCamelCase (bidirectional)", () => {
         };
       }>();
 
-      expectTypeOf<z.infer<typeof camelCase>>().toMatchObjectType<{
+      type OutputType = {
         keyOne?: string;
         keyTwo: string | null;
         additionalProps: {
           fooBar?: number;
         };
-      }>();
+      }
+
+      expectTypeOf<Parameters<typeof camelCase["parse"]>[0]>().toEqualTypeOf<OutputType>();
+      expectTypeOf<Parameters<typeof camelCase["safeParse"]>[0]>().toEqualTypeOf<OutputType>();
+      expectTypeOf<z.infer<typeof camelCase>>().toEqualTypeOf<OutputType>();
     });
+  });
+
+  test("union types", () => {
+    const schema = z.object({
+      test: z.string().nullable(),
+      union_type: z.union([
+        z.object({
+          foo_bar: z.number().optional(),
+        }),
+        z.object({
+          bar_baz: z.number().optional(),
+        }),
+      ])
+    });
+    const camelCase = zodToCamelCase(schema, {bidirectional: true});
+
+    expectTypeOf<z.infer<typeof schema>>().toEqualTypeOf<{
+      test: string | null;
+      union_type: {
+        foo_bar?: number | undefined;
+      } | {
+        bar_baz?: number | undefined;
+      };
+    }>();
+
+    type OutputType = {
+      test: string | null;
+      unionType: {
+        fooBar?: number | undefined;
+      } | {
+        barBaz?: number | undefined;
+      };
+    }
+
+    expectTypeOf<Parameters<typeof camelCase["parse"]>[0]>().toEqualTypeOf<OutputType>();
+    expectTypeOf<Parameters<typeof camelCase["safeParse"]>[0]>().toEqualTypeOf<OutputType>();
+    expectTypeOf<z.infer<typeof camelCase>>().toEqualTypeOf<OutputType>();
   });
 
   describe(".safeParse()", () => {

@@ -11,7 +11,7 @@ type ZodContribSnakeToCamelStep2<S extends string> =
     : S;
 
 export type ZodContribSnakeToCamel<S extends string> =
-  ZodContribSnakeToCamelStep1<S>;
+  ZodContribSnakeToCamelStep1<Lowercase<S>>;
 
 export type ZodContribKeysToCamel<U> =
   U extends Array<infer V>

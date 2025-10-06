@@ -4,6 +4,7 @@ import {
   camelToSnakeCase,
   keysToCamelCase,
   keysToSnakeCase,
+  prettyFormatArray,
   snakeToCamelCase,
 } from "./format";
 
@@ -15,6 +16,11 @@ describe("snakeToCamelCase", () => {
     { input: "foo__", expected: "foo" },
     { input: "foo_", expected: "foo" },
     { input: "__foo_", expected: "foo" },
+    { input: "__foo_", expected: "foo" },
+    { input: "__ID_", expected: "id" },
+    { input: "fooBarBaz", expected: "foobarbaz" },
+    { input: "c_$fé", expected: "c$fé" },
+    { input: "some_c$fé", expected: "someC$fé" },
   ];
 
   for (const { input, expected } of TEST_CASES) {
@@ -100,5 +106,21 @@ describe("keysToSnakeCase", () => {
         expect(keysToSnakeCase(input)).toEqual(expected);
       },
     );
+  }
+});
+
+describe("prettyFormatArray", () => {
+  const TEST_CASES = [
+    {input: ["foo"], expected: `"foo"`},
+    {input: ["foo", "bar"], expected: `"foo" & "bar"`},
+    {input: ["foo", "bar", "baz"], expected: `"foo", "bar" & "baz"`},
+    {input: ["foo", 1, "baz"], expected: `"foo", 1 & "baz"`},
+    {input: ["foo", false, "baz"], expected: `"foo", false & "baz"`},
+  ];
+
+  for (const { input, expected } of TEST_CASES) {
+    test(`${JSON.stringify(input)} -> ${JSON.stringify(expected)}`, () => {
+      expect(prettyFormatArray(input)).toEqual(expected);
+    });
   }
 });
