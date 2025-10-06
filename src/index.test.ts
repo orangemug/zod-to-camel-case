@@ -296,7 +296,7 @@ describe("zodToCamelCase (unidirectional)", () => {
 
     const camelCaseSchema = zodToCamelCase(optional_schema);
 
-    expect(camelCaseSchema.parse(camelData)).toEqual(camelData);
+    expect(camelCaseSchema.parse(optional_data)).toEqual(camelData);
   });
 
   it("can convert a complex schema", () => {
@@ -363,15 +363,13 @@ describe("zodToCamelCase (unidirectional)", () => {
       z.object({ type: z.literal("snake_type"), snake_type: z.string() }),
     ]);
 
-    const data = { type: "snake_type", snake_type: "test" };
-
+    const data = { type: "snake_type" as const, snake_type: "test" };
     expect(schema.parse(data)).toEqual(data);
 
     const camelSchema = zodToCamelCase(schema);
-
     const camelData = keysToCamelCase(data);
-
-    expect(camelSchema.parse(camelData)).toEqual(camelData);
+    
+    expect(camelSchema.parse(data)).toEqual(camelData);
   });
 
   it("can convert a tuple schema", () => {
@@ -390,6 +388,42 @@ describe("zodToCamelCase (unidirectional)", () => {
 });
 
 describe("zodToCamelCase (bidirectional)", () => {
+  it("Discriminated union must have at least one option", () => {
+    const schema = z.discriminatedUnion("type", [
+      z.object({ type: z.literal("snake_type"), snake_type: z.string() }),
+    ]);
+
+    const data = { type: "snake_type" as const, snake_type: "test" };
+
+    expect(schema.parse(data)).toEqual(data);
+
+    const camelSchema = zodToCamelCase(schema, {bidirectional: true});
+
+    const camelData = keysToCamelCase(data);
+    
+    expect(camelSchema.parse(camelData)).toEqual(camelData);
+  });
+
+  it("can convert an optional schema to camelCase", () => {
+    const optional_schema = z
+      .object({
+        test_param: z.string().optional(),
+      })
+      .optional();
+
+    const optional_data = {
+      test_param: "test",
+    };
+
+    expect(optional_schema.parse(optional_data)).toEqual(optional_data);
+
+    const camelData = keysToCamelCase(optional_data);
+
+    const camelCaseSchema = zodToCamelCase(optional_schema, {bidirectional: true});
+
+    expect(camelCaseSchema.parse(camelData)).toEqual(camelData);
+  });
+
   describe("schema types", () => {
     test("basic types", () => {
       const schema = z.object({
