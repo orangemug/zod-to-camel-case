@@ -368,7 +368,7 @@ describe("zodToCamelCase (unidirectional)", () => {
 
     const camelSchema = zodToCamelCase(schema);
     const camelData = keysToCamelCase(data);
-    
+
     expect(camelSchema.parse(data)).toEqual(camelData);
   });
 
@@ -397,10 +397,10 @@ describe("zodToCamelCase (bidirectional)", () => {
 
     expect(schema.parse(data)).toEqual(data);
 
-    const camelSchema = zodToCamelCase(schema, {bidirectional: true});
+    const camelSchema = zodToCamelCase(schema, { bidirectional: true });
 
     const camelData = keysToCamelCase(data);
-    
+
     expect(camelSchema.parse(camelData)).toEqual(camelData);
   });
 
@@ -419,7 +419,9 @@ describe("zodToCamelCase (bidirectional)", () => {
 
     const camelData = keysToCamelCase(optional_data);
 
-    const camelCaseSchema = zodToCamelCase(optional_schema, {bidirectional: true});
+    const camelCaseSchema = zodToCamelCase(optional_schema, {
+      bidirectional: true,
+    });
 
     expect(camelCaseSchema.parse(camelData)).toEqual(camelData);
   });
