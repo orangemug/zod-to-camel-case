@@ -6,34 +6,29 @@ import {
   keysToSnakeCase,
   snakeToCamelCase,
 } from "./format";
+import { snakeToCamelTestData } from "./helpers/data";
 
 describe("snakeToCamelCase", () => {
-  const TEST_CASES = [
-    { input: "foo_bar_baz", expected: "fooBarBaz" },
-    { input: "foo_bar__baz", expected: "fooBarBaz" },
-    { input: "foo__bar_baz", expected: "fooBarBaz" },
-    { input: "foo__", expected: "foo" },
-    { input: "foo_", expected: "foo" },
-    { input: "__foo_", expected: "foo" },
-  ];
-
-  for (const { input, expected } of TEST_CASES) {
-    test(`${JSON.stringify(input)} -> ${JSON.stringify(expected)}`, () => {
-      expect(snakeToCamelCase(input)).toEqual(expected);
-    });
+  for (const item of snakeToCamelTestData) {
+    if (item.throwsError) {
+      test(`${JSON.stringify(item.input)} -> (throws)`, () => {
+        expect(() => snakeToCamelCase(item.input)).toThrowError();
+      });
+    } else {
+      test(`${JSON.stringify(item.input)} -> ${JSON.stringify(item.expected)}`, () => {
+        expect(snakeToCamelCase(item.input)).toEqual(item.expected);
+      });
+    }
   }
 });
 
 describe("camelToSnakeCase", () => {
-  const TEST_CASES = [
-    { input: "fooBarBaz", expected: "foo_bar_baz" },
-    { input: "foo", expected: "foo" },
-  ];
-
-  for (const { input, expected } of TEST_CASES) {
-    test(`${JSON.stringify(input)} -> ${JSON.stringify(expected)}`, () => {
-      expect(camelToSnakeCase(input)).toEqual(expected);
-    });
+  for (const item of snakeToCamelTestData) {
+    if (!item.throwsError) {
+      test(`${JSON.stringify(item.expected)} -> ${JSON.stringify(item.input)}`, () => {
+        expect(camelToSnakeCase(item.expected)).toEqual(item.input);
+      });
+    }
   }
 });
 
@@ -53,7 +48,7 @@ describe("keysToCamelCase", () => {
         fooBar: "testing",
         additionalProps: {
           testBaz: {
-            foo: [{ fooBar: "foo" }],
+            foo: [{ __fooBar: "foo" }],
           },
         },
       },
