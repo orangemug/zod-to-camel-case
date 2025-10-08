@@ -6,6 +6,14 @@ Convert zod schema object keys to camel case.
 
 The `zodToCamelCase` supports both unidirectional and bidirectional transformation of zod schemas
 
+### Allowed object keys
+
+Object keys will type-error/runtime-error if they don't match this pattern
+
+```
+/_*[a-z_]_*/
+```
+
 ### `zodToCamelCase` (unidirectional)
 
 By default `zodToCamelCase` supports unidirectional transformation of the schema.

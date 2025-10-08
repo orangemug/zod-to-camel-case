@@ -55,9 +55,12 @@ export default function zodToCamelCase<T extends ZodType>(
       input: ZodContribKeysToCamel<z.infer<T>> | z.infer<T>,
     ): ZodContribKeysToCamel<z.infer<T>> => {
       try {
-        const parsedInput = bidirectional ? keysToSnakeCase(input) : input
+        const parsedInput = bidirectional ? keysToSnakeCase(input) : input;
         const parsed = schema.parse(parsedInput);
-        return keysToCamelCase(parsed) as ZodContribKeysToCamel<z.infer<T>>;
+        const result = keysToCamelCase(parsed) as ZodContribKeysToCamel<
+          z.infer<T>
+        >;
+        return result;
       } catch (err) {
         if (bidirectional && err instanceof ZodError) {
           throw rewriteErrorPathsToCamel(err);
@@ -66,7 +69,7 @@ export default function zodToCamelCase<T extends ZodType>(
       }
     },
     safeParse(input: ZodContribKeysToCamel<z.infer<T>>) {
-      const parsedInput = bidirectional ? keysToSnakeCase(input) : input
+      const parsedInput = bidirectional ? keysToSnakeCase(input) : input;
       const result = schema.safeParse(parsedInput);
       if (!result.success) {
         return {

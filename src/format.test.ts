@@ -9,18 +9,26 @@ import {
 import { snakeToCamelTestData } from "./helpers/data";
 
 describe("snakeToCamelCase", () => {
-  for (const { input, expected } of snakeToCamelTestData) {
-    test(`${JSON.stringify(input)} -> ${JSON.stringify(expected)}`, () => {
-      expect(snakeToCamelCase(input)).toEqual(expected);
-    });
+  for (const item of snakeToCamelTestData) {
+    if (item.throwsError) {
+      test(`${JSON.stringify(item.input)} -> (throws)`, () => {
+        expect(() => snakeToCamelCase(item.input)).toThrowError();
+      });
+    } else {
+      test(`${JSON.stringify(item.input)} -> ${JSON.stringify(item.expected)}`, () => {
+        expect(snakeToCamelCase(item.input)).toEqual(item.expected);
+      });
+    }
   }
 });
 
 describe("camelToSnakeCase", () => {
-  for (const { input, expected } of snakeToCamelTestData) {
-    test(`${JSON.stringify(expected)} -> ${JSON.stringify(input)}`, () => {
-      expect(camelToSnakeCase(expected)).toEqual(input);
-    });
+  for (const item of snakeToCamelTestData) {
+    if (!item.throwsError) {
+      test(`${JSON.stringify(item.expected)} -> ${JSON.stringify(item.input)}`, () => {
+        expect(camelToSnakeCase(item.expected)).toEqual(item.input);
+      });
+    }
   }
 });
 
