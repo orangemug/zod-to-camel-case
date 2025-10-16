@@ -1,3 +1,5 @@
+import { ZodObject } from "zod";
+
 type AllowedLetters =
   | "a"
   | "b"
