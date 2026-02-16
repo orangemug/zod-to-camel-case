@@ -3,6 +3,9 @@
   "description": "Convert zod schema object keys to camel case",
   "version": "0.4.5",
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/orangemug/zod-to-camel-case"
+  },
   "main": "./dist/npm/index.js",
   "types": "./dist/npm/types.d.ts",
   "type": "module",
