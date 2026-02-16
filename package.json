@@ -1,7 +1,7 @@
 {
   "name": "zod-to-camel-case",
   "description": "Convert zod schema object keys to camel case",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "license": "MIT",
   "main": "./dist/npm/index.js",
   "types": "./dist/npm/types.d.ts",
