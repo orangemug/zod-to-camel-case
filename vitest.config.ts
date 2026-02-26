@@ -4,4 +4,8 @@ export default {
     exclude: [],
     include: ["./src/**/*.test.ts"],
   },
+  typecheck: {
+    enabled: true,
+    include: ["./src/**/*.test.ts"],
+  },
 };

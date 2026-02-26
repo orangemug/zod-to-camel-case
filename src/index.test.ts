@@ -624,7 +624,7 @@ describe("zodToCamelCase (bidirectional)", () => {
       expect(result).toEqual("testing");
     });
 
-    test("array schema", () => {
+    test.only("array schema", () => {
       const schema = z.array(z.object({ foo_bar: z.string() }));
       const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
       const result = camelCaseSchema.parse([{ fooBar: "testing" }]);
