@@ -14,7 +14,7 @@ describe("snakeToCamelCase", () => {
     { input: "foo__bar_baz", expected: "fooBarBaz" },
     { input: "foo__", expected: "foo" },
     { input: "foo_", expected: "foo" },
-    { input: "__foo_", expected: "foo" },
+    { input: "__foo_", expected: "__foo_" },
   ];
 
   for (const { input, expected } of TEST_CASES) {
@@ -45,7 +45,7 @@ describe("keysToCamelCase", () => {
         foo_bar: "testing",
         additional_props: {
           test_baz: {
-            foo: [{ __foo_bar: "foo" }],
+            foo: [{ __foo_bar: "foo", foo_bar_baz: "foo" }],
           },
         },
       },
@@ -53,7 +53,7 @@ describe("keysToCamelCase", () => {
         fooBar: "testing",
         additionalProps: {
           testBaz: {
-            foo: [{ fooBar: "foo" }],
+            foo: [{ __foo_bar: "foo", fooBarBaz: "foo" }],
           },
         },
       },

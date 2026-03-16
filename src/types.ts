@@ -1,10 +1,10 @@
-// step 1: remove leading underscores
+// step 1: keys with a leading underscore are preserved as-is
 export type ZodContribSnakeToCamelStep1<S extends string> =
   S extends `_${infer Tail}`
-    ? ZodContribSnakeToCamelStep1<Tail>
+    ? S
     : ZodContribSnakeToCamelStep2<S>;
 
-// step 1: snake_case -> camelCase
+// step 2: snake_case -> camelCase
 type ZodContribSnakeToCamelStep2<S extends string> =
   S extends `${infer Head}_${infer Tail}`
     ? `${Head}${Capitalize<ZodContribSnakeToCamelStep2<Tail>>}`
