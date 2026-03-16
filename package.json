@@ -7,7 +7,7 @@
     "url": "https://github.com/orangemug/zod-to-camel-case"
   },
   "main": "./dist/npm/index.js",
-  "types": "./dist/npm/types.d.ts",
+  "types": "./dist/npm/index.d.ts",
   "type": "module",
   "scripts": {
     "check-types": "tsc --noEmit",
@@ -23,9 +23,9 @@
     ".": "./dist/npm/index.js"
   },
   "files": [
-    "./dist/npm",
-    "./package.json",
-    "./README.md"
+    "dist/npm",
+    "package.json",
+    "README.md"
   ],
   "devDependencies": {
     "@codecov/rollup-plugin": "^1.9.1",
