@@ -15,10 +15,9 @@ export function keysToSnakeCase<T>(obj: T): any {
 }
 
 export const snakeToCamelCase = (str: string) => {
-  if (str.startsWith("_")) return str;
-  return str
-    .replace(/_+([a-z])/g, (_, c) => c.toUpperCase())
-    .replace(/_+$/, "");
+  return str.replace(/([^_])_+([a-z0-9])/gi, (_, before, char) => {
+    return before + char.toUpperCase();
+  });
 };
 
 export function keysToCamelCase<T>(obj: T): any {

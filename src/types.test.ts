@@ -12,10 +12,15 @@ describe("types", () => {
     expectTypeOf<
       ZodContribSnakeToCamel<"foo__bar_baz">
     >().toEqualTypeOf<"fooBarBaz">();
-    expectTypeOf<ZodContribSnakeToCamel<"foo__">>().toEqualTypeOf<"foo">();
-    expectTypeOf<ZodContribSnakeToCamel<"foo_">>().toEqualTypeOf<"foo">();
-    expectTypeOf<ZodContribSnakeToCamel<"_state">>().toEqualTypeOf<"_state">();
-    expectTypeOf<ZodContribSnakeToCamel<"__foo_">>().toEqualTypeOf<"__foo_">();
+    expectTypeOf<ZodContribSnakeToCamel<"foo__">>().toEqualTypeOf<"foo__">();
+    expectTypeOf<ZodContribSnakeToCamel<"foo_">>().toEqualTypeOf<"foo_">();
+    expectTypeOf<ZodContribSnakeToCamel<"_foo_bar">>().toEqualTypeOf<"_fooBar">();
+    expectTypeOf<
+      ZodContribSnakeToCamel<"_foo_bar_baz_">
+    >().toEqualTypeOf<"_fooBarBaz_">();
+    expectTypeOf<
+      ZodContribSnakeToCamel<"__foo_bar__">
+    >().toEqualTypeOf<"__fooBar__">();
   });
 
   describe("ZodContribKeysToCamel", () => {
@@ -30,7 +35,7 @@ describe("types", () => {
         }>
       >().toEqualTypeOf<{
         fooBarBaz: {
-          __foo_bar_baz_?: {
+          __fooBarBaz_?: {
             name: string;
           };
         };
@@ -49,7 +54,7 @@ describe("types", () => {
         }>
       >().toEqualTypeOf<{
         fooBarBaz: {
-          __foo_bar_baz_: {
+          __fooBarBaz_: {
             name: string;
             check: boolean;
           }[];
