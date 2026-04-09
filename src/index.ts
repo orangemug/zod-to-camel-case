@@ -1,4 +1,4 @@
-import { z, ZodError, ZodType } from "zod";
+import { z, ZodError, ZodSafeParseResult, ZodType } from "zod";
 import { keysToCamelCase, keysToSnakeCase } from "./format";
 import { ZodContribSnakeToCamel, ZodContribKeysToCamel } from "./types";
 import { rewriteErrorPathsToCamel } from "./error";
@@ -12,11 +12,7 @@ export type zodToCamelCaseOptions = { bidirectional?: boolean };
 type parse<Input, T> = (input: Input) => ZodContribKeysToCamel<z.infer<T>>;
 
 // safeParse(...) with optional `Input` type
-type safeParse<Input, T> = (input: Input) => {
-  success: boolean;
-  data?: ZodContribKeysToCamel<z.infer<T>>;
-  error?: any;
-};
+type safeParse<Input, T> = (input: Input) => ZodSafeParseResult<ZodContribKeysToCamel<z.infer<T>>>;
 
 // zodToCamelCase (unidirectional)
 export default function zodToCamelCase<T extends ZodType>(
