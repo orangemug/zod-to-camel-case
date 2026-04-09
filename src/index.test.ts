@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, test, it } from "vitest";
 
 import zodToCamelCase from "./";
 import { keysToCamelCase } from "./format";
-import { $ZodIssue } from "zod/v4/core";
+import { zodError } from "./test-utils";
 
 const complex_schema = z
   .object({
@@ -122,20 +122,14 @@ describe("zodToCamelCase (unidirectional)", () => {
         key_two: "one",
       });
       expect(results.success).toEqual(false);
-      expect(results.error?.message).toEqual(
-        JSON.stringify(
-          [
-            {
-              expected: "string",
-              code: "invalid_type",
-              path: ["key_one"],
-              message: "Invalid input: expected string, received undefined",
-            },
-          ],
-          null,
-          2,
-        ),
-      );
+      expect(results.error?.message).toEqual(zodError(
+        {
+          expected: "string",
+          code: "invalid_type",
+          path: ["key_one"],
+          message: "Invalid input: expected string, received undefined",
+        },
+      ));
     });
 
     test("non-object schema", () => {
@@ -189,20 +183,14 @@ describe("zodToCamelCase (unidirectional)", () => {
           // @ts-expect-error
           key_two: "one",
         });
-      }).toThrow(
-        JSON.stringify(
-          [
-            {
-              expected: "string",
-              code: "invalid_type",
-              path: ["key_one"],
-              message: "Invalid input: expected string, received undefined",
-            },
-          ],
-          null,
-          2,
-        ),
-      );
+      }).toThrow(zodError(
+        {
+          expected: "string",
+          code: "invalid_type",
+          path: ["key_one"],
+          message: "Invalid input: expected string, received undefined",
+        },
+      ));
     });
 
     test("non parse error", () => {
@@ -428,20 +416,14 @@ describe("zodToCamelCase (unidirectional)", () => {
         // @ts-expect-error
         key_two: 2,
       })
-    ).toThrow(
-      JSON.stringify(
-        [
-          {
-            expected: "string",
-            code: "invalid_type",
-            path: ["key_two"],
-            message: "Invalid input: expected string, received number",
-          },
-        ],
-        null,
-        2,
-      ),
-    );
+    ).toThrow(zodError(
+      {
+        expected: "string",
+        code: "invalid_type",
+        path: ["key_two"],
+        message: "Invalid input: expected string, received number",
+      },
+    ));
 
     expect(camelCase.parse({
       key_one: "abc",
@@ -457,20 +439,14 @@ describe("zodToCamelCase (unidirectional)", () => {
         key_one: 2,
         key_two: "def",
       })
-    ).toThrow(
-      JSON.stringify(
-        [
-          {
-            expected: "string",
-            code: "invalid_type",
-            path: ["key_one"],
-            message: "Invalid input: expected string, received number",
-          },
-        ],
-        null,
-        2,
-      ),
-    );
+    ).toThrow(zodError(
+      {
+        expected: "string",
+        code: "invalid_type",
+        path: ["key_one"],
+        message: "Invalid input: expected string, received number",
+      },
+    ));
   });
 
   it("has separate state to the original schema", () => {
@@ -501,20 +477,14 @@ describe("zodToCamelCase (unidirectional)", () => {
         key_one: "abc",
         key_two: 2,
       })
-    ).toThrow(
-      JSON.stringify(
-        [
-          {
-            expected: "string",
-            code: "invalid_type",
-            path: ["key_two"],
-            message: "Invalid input: expected string, received number",
-          },
-        ],
-        null,
-        2,
-      ),
-    );
+    ).toThrow(zodError(
+      {
+        expected: "string",
+        code: "invalid_type",
+        path: ["key_two"],
+        message: "Invalid input: expected string, received number",
+      },
+    ));
 
     expect(() =>
       camelCase.parse({
@@ -522,20 +492,14 @@ describe("zodToCamelCase (unidirectional)", () => {
         key_one: 2,
         key_two: "def",
       })
-    ).toThrow(
-      JSON.stringify(
-        [
-          {
-            expected: "string",
-            code: "invalid_type",
-            path: ["key_one"],
-            message: "Invalid input: expected string, received number",
-          },
-        ],
-        null,
-        2,
-      ),
-    );
+    ).toThrow(zodError(
+      {
+        expected: "string",
+        code: "invalid_type",
+        path: ["key_one"],
+        message: "Invalid input: expected string, received number",
+      },
+    ));
   });
 });
 
@@ -671,20 +635,14 @@ describe("zodToCamelCase (bidirectional)", () => {
         keyTwo: "one",
       });
       expect(results.success).toEqual(false);
-      expect(results.error?.message).toEqual(
-        JSON.stringify(
-          [
-            {
-              expected: "string",
-              code: "invalid_type",
-              path: ["keyOne"],
-              message: "Invalid input: expected string, received undefined",
-            },
-          ],
-          null,
-          2,
-        ),
-      );
+      expect(results.error?.message).toEqual(zodError(
+        {
+          expected: "string",
+          code: "invalid_type",
+          path: ["keyOne"],
+          message: "Invalid input: expected string, received undefined",
+        },
+      ));
     });
 
     test("non-object schema", () => {
@@ -738,20 +696,14 @@ describe("zodToCamelCase (bidirectional)", () => {
           // @ts-expect-error
           keyTwo: "one",
         });
-      }).toThrow(
-        JSON.stringify(
-          [
-            {
-              expected: "string",
-              code: "invalid_type",
-              path: ["keyOne"],
-              message: "Invalid input: expected string, received undefined",
-            },
-          ],
-          null,
-          2,
-        ),
-      );
+      }).toThrow(zodError(
+        {
+          expected: "string",
+          code: "invalid_type",
+          path: ["keyOne"],
+          message: "Invalid input: expected string, received undefined",
+        },
+      ));
     });
 
     test("non parse error", () => {
@@ -785,9 +737,3 @@ describe("zodToCamelCase (bidirectional)", () => {
   });
 });
 
-// Helper to convert Zod issues into the error string thrown by Zod.
-function zodIssue(...issues: $ZodIssue[]): string {
-  return JSON.stringify([
-    ...issues
-  ]);
-}
