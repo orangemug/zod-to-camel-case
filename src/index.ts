@@ -57,6 +57,11 @@ export default function zodToCamelCase<T extends ZodType>(
 
   return {
     ...newSchema,
+
+    // This is a non-enumerable property so doesn't get copied by default, but is required by the
+    // internals of Zod.
+    _zod: newSchema._zod,
+    
     parse: (
       input: ZodContribKeysToCamel<z.infer<T>> | z.infer<T>,
     ): ZodContribKeysToCamel<z.infer<T>> => {

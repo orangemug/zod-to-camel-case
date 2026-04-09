@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { rewriteErrorPathsToCamel } from "./error";
 import { ZodError } from "zod";
+import { zodError } from "./test-utils";
 
 describe("rewriteErrorPathsToCamel", () => {
   test("basic", () => {
@@ -13,20 +14,14 @@ describe("rewriteErrorPathsToCamel", () => {
       },
     ]);
     const result = rewriteErrorPathsToCamel(error);
-    expect(result.message).toEqual(
-      JSON.stringify(
-        [
-          {
-            expected: "string",
-            code: "invalid_type",
-            path: ["keyOne"],
-            message: "Invalid input: expected string, received undefined",
-          },
-        ],
-        null,
-        2,
-      ),
-    );
+    expect(result.message).toEqual(zodError(
+      {
+        expected: "string",
+        code: "invalid_type",
+        path: ["keyOne"],
+        message: "Invalid input: expected string, received undefined",
+      },
+    ));
   });
 
   test("complex", () => {
@@ -39,19 +34,13 @@ describe("rewriteErrorPathsToCamel", () => {
       },
     ]);
     const result = rewriteErrorPathsToCamel(error);
-    expect(result.message).toEqual(
-      JSON.stringify(
-        [
-          {
-            expected: "string",
-            code: "invalid_type",
-            path: ["keyOne", 0, "somethingElse"],
-            message: "Invalid input: expected string, received undefined",
-          },
-        ],
-        null,
-        2,
-      ),
-    );
+    expect(result.message).toEqual(zodError(
+      {
+        expected: "string",
+        code: "invalid_type",
+        path: ["keyOne", 0, "somethingElse"],
+        message: "Invalid input: expected string, received undefined",
+      },
+    ));
   });
 });
