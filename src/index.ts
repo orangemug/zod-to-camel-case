@@ -52,7 +52,7 @@ export default function zodToCamelCase<T extends ZodType>(
       return input;
     }, schema)
     .transform(
-      (data) => keysToCamelCase(data) as ZodContribKeysToCamel<z.infer<T>>,
+      (data) => keysToCamelCase(data),
     );
 
   return {

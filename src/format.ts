@@ -1,3 +1,5 @@
+import { ZodContribKeysToCamel } from "./types";
+
 export const camelToSnakeCase = (str: string) =>
   str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
@@ -20,15 +22,15 @@ export const snakeToCamelCase = (str: string) => {
   });
 };
 
-export function keysToCamelCase<T>(obj: T): any {
-  if (Array.isArray(obj)) return obj.map(keysToCamelCase);
+export function keysToCamelCase<T>(obj: T): ZodContribKeysToCamel<T> {
+  if (Array.isArray(obj)) return obj.map(keysToCamelCase) as ZodContribKeysToCamel<T>;
   if (obj !== null && typeof obj === "object") {
     return Object.fromEntries(
       Object.entries(obj).map(([k, v]) => [
         snakeToCamelCase(k),
         keysToCamelCase(v),
       ]),
-    );
+    ) as ZodContribKeysToCamel<T>;
   }
-  return obj;
+  return obj as ZodContribKeysToCamel<T>;
 }

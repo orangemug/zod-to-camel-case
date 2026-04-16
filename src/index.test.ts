@@ -308,7 +308,7 @@ describe("zodToCamelCase (unidirectional)", () => {
     const unionSchema = zodToCamelCase(union_schema);
 
     const simple_item = {
-      type: "simple",
+      type: "simple" as const,
       url: "https://example.com/simple_image.png",
       size: 12345,
     };
@@ -364,7 +364,7 @@ describe("zodToCamelCase (unidirectional)", () => {
   it("can convert a tuple schema", () => {
     const tupleSchema = z.tuple([z.string(), z.number()]);
 
-    const data = ["test", 123];
+    const data: [string, number] = ["test", 123];
 
     expect(tupleSchema.parse(data)).toEqual(data);
 
