@@ -21,12 +21,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
       - uses: actions/setup-node@v4
         with:
           node-version: "24.x"
-      - run: npm ci
-      - run: npm run test:ci
-      - run: npm run build
+      - run: pnpm ci
+      - run: pnpm run test:ci
+      - run: pnpm run build
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - uses: actions/upload-artifact@v4
