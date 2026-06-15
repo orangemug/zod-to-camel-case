@@ -11,12 +11,12 @@
   "type": "module",
   "scripts": {
     "check-types": "tsc --noEmit",
-    "lint": "npx prettier . --check",
+    "lint": "pnpx prettier . --check",
     "test": "vitest run --coverage",
     "test:watch": "vitest run --watch",
     "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
-    "lint:format": "npx prettier . --write",
-    "build": "npm run build:npm",
+    "lint:format": "pnpx prettier . --write",
+    "build": "pnpm run build:npm",
     "build:npm": "rollup -c rollup.config.ts --configPlugin typescript"
   },
   "exports": {
@@ -45,8 +45,10 @@
     "tsx": "^4.17.0",
     "vitest": "^4.0.18"
   },
+  "packageManager": "pnpm@11.2.0",
   "engines": {
-    "node": ">=20.x"
+    "node": ">=20.x",
+    "pnpm": ">=11"
   },
   "peerDependencies": {
     "zod": "^4.3.6"
