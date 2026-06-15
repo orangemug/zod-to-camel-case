@@ -28,22 +28,22 @@
     "README.md"
   ],
   "devDependencies": {
-    "@codecov/rollup-plugin": "^1.9.1",
+    "@codecov/rollup-plugin": "^2.0.1",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-typescript": "^12.1.2",
     "@rollup/plugin-virtual": "^3.0.2",
     "@tsconfig/node22": "^22.0.2",
     "@types/yargs": "^17.0.34",
-    "@vitest/coverage-v8": "^4.0.18",
-    "prettier": "^3.8.1",
-    "rollup": "^4.52.5",
+    "@vitest/coverage-v8": "^4.1.8",
+    "prettier": "^3.8.4",
+    "rollup": "^4.61.1",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-typescript-paths": "^1.5.0",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.3",
-    "tsx": "^4.17.0",
-    "vitest": "^4.0.18"
+    "tsx": "^4.22.4",
+    "vitest": "^4.1.8"
   },
   "packageManager": "pnpm@11.2.0",
   "engines": {
