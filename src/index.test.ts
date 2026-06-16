@@ -4,6 +4,7 @@ import { describe, expect, expectTypeOf, test, it } from "vitest";
 import zodToCamelCase from "./";
 import { keysToCamelCase } from "./format";
 import { zodError } from "./test-utils";
+import { Decimal } from "decimal.js";
 
 const complex_schema = z
   .object({
@@ -304,15 +305,15 @@ describe("zodToCamelCase (unidirectional)", () => {
     });
   })
   
-  it.skip("can convert a 'function' schema", () => {
-    // const schema = zodToCamelCase(z.function({
-    //   input: [z.string()], // parameters (must be an array or a ZodTuple)
-    //   output: z.number()  // return type
-    // }));
-    // const fn = (input: string) => input.length;
-    // const out = schema.parse(fn)
-    // expect(out).toBeDefined();
-    // expect(out("test")).toEqual(4);
+  it("can convert a 'function' schema", () => {
+    const schema = zodToCamelCase(z.function({
+      input: [z.string()], // parameters (must be an array or a ZodTuple)
+      output: z.number()  // return type
+    }));
+    const fn = (input: string) => input.length;
+    const out = schema.parse(fn)
+    expect(out).toBeDefined();
+    expect(out("test")).toEqual(4);
   })
   
   it("can convert a 'int' schema", () => {
@@ -355,10 +356,10 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(schema.parse({a: 23})).toEqual({a: 23});
   })
   
-  it.skip("can convert a 'file' schema", () => {
-    // const schema = zodToCamelCase(z.file());
-    // const file = new File([], "test.txt")
-    // expect(schema.parse(file)).toEqual(file);
+  it("can convert a 'file' schema", () => {
+    const schema = zodToCamelCase(z.file());
+    const file = new File([], "test.txt")
+    expect(schema.parse(file)).toEqual(file);
   })
   
   it("can convert a 'array' schema", () => {
@@ -473,9 +474,9 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(schema.parse("hello, testing!")).toEqual("hello, testing!");
   })
   
-  it.skip("can convert a 'promise' schema", async () => {
-    // const schema = zodToCamelCase(z.promise(z.number()));
-    // expect(await schema.parseAsync(Promise.resolve(2))).toEqual(2);
+  it("can convert a 'promise' schema", async () => {
+    const schema = zodToCamelCase(z.promise(z.number()));
+    expect(await schema.parseAsync(Promise.resolve(2))).toEqual(2);
   })
   
   it.skip("can convert a 'lazy' schema", () => {
@@ -484,6 +485,8 @@ describe("zodToCamelCase (unidirectional)", () => {
   })
   
   it("can convert a 'custom' schema", () => {
+    const schema = zodToCamelCase(z.custom<Decimal>((val) => Decimal.isDecimal(val)));
+    expect(schema.parse(new Decimal(123.45))).toEqual(new Decimal(123.45));
   })
 
   it("can convert a 'stringFormat' schema", () => {

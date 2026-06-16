@@ -23,14 +23,14 @@ export const snakeToCamelCase = (str: string) => {
   });
 };
 
+const isPlainObject = (value: unknown) => value !== null && value?.constructor === Object;
+
 export function keysToCamelCase<T, S>(obj: T): ZodContribKeysToCamel<T, S> {
   if (Array.isArray(obj)) return obj.map(keysToCamelCase) as ZodContribKeysToCamel<T, S>;
   if (obj instanceof Set) return new Set(Array.from(obj).map(keysToCamelCase)) as ZodContribKeysToCamel<T, S>;
   if (obj instanceof Map) return new Map(Array.from(obj).map(([k, v]) => [keysToCamelCase(k), keysToCamelCase(v)])) as ZodContribKeysToCamel<T, S>;
-  // if (obj instanceof Promise) return obj;
-  // if (obj instanceof Function) return obj;
-  // if (obj instanceof File) return obj;
-  if (obj !== null && typeof obj === "object") {
+  
+  if (obj !== null && typeof obj === "object" && isPlainObject(obj)) {
     return Object.fromEntries(
       Object.entries(obj).map(([k, v]) => [
         snakeToCamelCase(k),

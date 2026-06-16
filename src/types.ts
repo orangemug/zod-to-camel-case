@@ -36,6 +36,9 @@ export type ZodContribSnakeToCamel<S extends string> =
 
 export type ZodContribKeysToCamel<U, S=object> =
   // Empty tuple
+  U extends Function
+    ? U
+    : 
   U extends []
     ? []
     // Non-empty tuple
