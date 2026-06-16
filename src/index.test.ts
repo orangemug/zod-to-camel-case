@@ -325,7 +325,7 @@ describe("zodToCamelCase (unidirectional)", () => {
   
   it("can convert a 'never' schema", () => {
     const schema = zodToCamelCase(z.never());
-    expect(() => schema.parse("foo")).toThrow();
+    expect(() => schema.parse("foo" as never)).toThrow();
   })
   
   it("can convert a 'any' schema", () => {
@@ -423,22 +423,22 @@ describe("zodToCamelCase (unidirectional)", () => {
   
   it("can convert a 'transform' schema", () => {
     const schema = zodToCamelCase(z.string().transform(val => val.length));
-    expect(schema.parse("test")).toEqual(4);
+    expect(schema.parse("test" as any)).toEqual(4);
   })
   
   it("can convert a 'default' schema", () => {
     const schema = zodToCamelCase(z.string().default("hello"));
-    expect(schema.parse(undefined)).toEqual("hello");
+    expect(schema.parse(undefined as any)).toEqual("hello");
   })
   
   it("can convert a 'prefault' schema", () => {
     const schema = zodToCamelCase(z.string().trim().toUpperCase().prefault("tiger"));
-    expect(schema.parse(undefined)).toEqual("TIGER");
+    expect(schema.parse(undefined as any)).toEqual("TIGER");
   })
   
   it("can convert a 'catch' schema", () => {
     const schema = zodToCamelCase(z.number().catch(42));
-    expect(schema.parse("testing")).toEqual(42);
+    expect(schema.parse("testing" as any)).toEqual(42);
   })
   
   it("can convert a 'nan' schema", () => {
