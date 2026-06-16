@@ -29,7 +29,6 @@ const parsers = {
     return schema;
   },
   "object": (schema: $ZodObject, remap: boolean) => {
-    // Required...
     const newShape = remap ? keysToCamelCaseNoDepth(schema._zod.def.shape) : schema._zod.def.shape;
 
     return new $ZodObject({
@@ -72,7 +71,6 @@ const parsers = {
     return schema
   },
   "record": (schema: $ZodRecord, remap: boolean) => {
-    // Required...
     return new $ZodRecord({
       ...schema._zod.def,
       keyType: parse(schema._zod.def.keyType, remap) as $ZodType<string | number | symbol, unknown>,
@@ -83,28 +81,24 @@ const parsers = {
     return schema;
   },
   "array": (schema: $ZodArray, remap: boolean) => {
-    // Required...
     return new $ZodArray({
       ...schema._zod.def,
       element: parse(schema._zod.def.element, remap),
     });
   },
   "tuple": (schema: $ZodTuple, remap: boolean) => {
-    // return schema
     return new $ZodTuple({
       ...schema._zod.def,
       items: (schema._zod.def.items ?? []).map((item) => parse(item, remap))
     });
   },
   "union": (schema: $ZodUnion, remap: boolean) => {
-    // Required...
     return new $ZodUnion({
       ...schema._zod.def,
       options: schema._zod.def.options.map((option) => parse(option, remap)),
     });
   },
   "intersection": (schema: $ZodIntersection, remap: boolean) => {
-    // Required...
     return new $ZodIntersection({
       ...schema._zod.def,
       left: parse(schema._zod.def.left, remap),
@@ -112,7 +106,6 @@ const parsers = {
     });
   },
   "map": (schema: $ZodMap, remap: boolean) => {
-    // Required...
     return new $ZodMap({
       ...schema._zod.def,
       keyType: parse(schema._zod.def.keyType, remap),
@@ -120,7 +113,6 @@ const parsers = {
     });
   },
   "set": (schema: $ZodSet, remap: boolean) => {
-    // Required...
     return new $ZodSet({
       ...schema._zod.def,
       valueType: parse(schema._zod.def.valueType, remap),
@@ -199,11 +191,9 @@ const parsers = {
     });
   },
   "lazy": (schema: $ZodLazy, remap: boolean) => {
-    // Required...
     return schema;
   },
   "custom": (schema: $ZodCustom, remap: boolean) => {
-    // Required...
     return schema;
   },
 } as const
