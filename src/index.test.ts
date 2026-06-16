@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { file } from "zod";
 import { describe, expect, expectTypeOf, test, it } from "vitest";
 
 import zodToCamelCase from "./";
@@ -260,6 +260,195 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(() => complex_schema.parse(example)).not.toThrow();
     expect(complex_schema.parse(example)).toEqual(example);
   });
+
+  it("can convert a 'string' schema", () => {
+    const schema = zodToCamelCase(z.string());
+    expect(schema.parse("test")).toEqual("test");
+  })
+
+  it("can convert a 'number' schema", () => {
+    const schema = zodToCamelCase(z.number());
+    expect(schema.parse(123)).toEqual(123);
+  })
+
+  it("can convert a 'bigint' schema", () => {
+    const schema = zodToCamelCase(z.bigint());
+    expect(schema.parse(BigInt(123))).toEqual(BigInt(123));
+  })
+
+  it("can convert a 'boolean' schema", () => {
+    const schema = zodToCamelCase(z.boolean());
+    expect(schema.parse(true)).toEqual(true);
+  })
+
+  it("can convert a 'symbol' schema", () => {
+    const schema = zodToCamelCase(z.symbol());
+    const sym = Symbol("test");
+    expect(schema.parse(sym)).toEqual(sym);
+  })
+
+  it("can convert a 'undefined' schema", () => {
+    const schema = zodToCamelCase(z.undefined());
+    expect(schema.parse(undefined)).toEqual(undefined);
+  })
+  
+  it("can convert a 'object' schema", () => {
+    const schema = zodToCamelCase(z.object({
+      test_param: z.string(),
+    }));
+    const data = {
+      test_param: "test",
+    };
+    expect(schema.parse(data)).toEqual({
+      testParam: "test",
+    });
+  })
+  
+  it.skip("can convert a 'function' schema", () => {
+
+  })
+  
+  it("can convert a 'int' schema", () => {
+    const schema = zodToCamelCase(z.int());
+    expect(schema.parse(1)).toEqual(1);
+  })
+  
+  it("can convert a 'null' schema", () => {
+    const schema = zodToCamelCase(z.null());
+    expect(schema.parse(null)).toEqual(null);
+  })
+  
+  it("can convert a 'void' schema", () => {
+    const schema = zodToCamelCase(z.void());
+    expect(schema.parse(void(0))).toEqual(void(0));
+  })
+  
+  it("can convert a 'never' schema", () => {
+    const schema = zodToCamelCase(z.never());
+    expect(() => schema.parse("foo")).toThrow();
+  })
+  
+  it("can convert a 'any' schema", () => {
+    const schema = zodToCamelCase(z.any());
+    expect(schema.parse({a: 1})).toEqual({a: 1});
+  })
+  
+  it("can convert a 'unknown' schema", () => {
+    const schema = zodToCamelCase(z.unknown());
+    expect(schema.parse({a: 1})).toEqual({a: 1});
+  })
+  
+  it("can convert a 'date' schema", () => {
+    const schema = zodToCamelCase(z.iso.date());
+    expect(schema.parse("2020-01-01")).toEqual("2020-01-01");
+  })
+  
+  it("can convert a 'record' schema", () => {
+    const schema = zodToCamelCase(z.record(z.string(), z.number()));
+    expect(schema.parse({a: 23})).toEqual({a: 23});
+  })
+  
+  it.skip("can convert a 'file' schema", () => {
+    const schema = zodToCamelCase(z.file());
+    const file = new File([], "test.txt")
+    expect(schema.parse(file)).toEqual(file);
+  })
+  
+  it("can convert a 'array' schema", () => {
+    const schema = zodToCamelCase(z.array(z.string()));
+    expect(schema.parse(["test"])).toEqual(["test"]);
+  })
+  
+  it("can convert a 'tuple' schema", () => {
+    const schema = zodToCamelCase(z.tuple([z.string(), z.number(), z.string()]));
+    expect(schema.parse(["test", 2, "test"])).toEqual(["test", 2, "test"]);
+  })
+  
+  it("can convert a 'union' schema", () => {
+    const schema = zodToCamelCase(z.union([z.string(), z.number()]));
+    expect(schema.parse("test")).toEqual("test");
+    expect(schema.parse(123)).toEqual(123);
+  })
+  
+  it.skip("can convert a 'intersection' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'map' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'set' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'enum' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'literal' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'nullable' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'optional' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'nonoptional' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'success' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'transform' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'default' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'prefault' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'catch' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'nan' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'pipe' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'readonly' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'template_literal' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'promise' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'lazy' schema", () => {
+
+  })
+  
+  it.skip("can convert a 'custom' schema", () => {
+
+  })
 
   it("can convert a union schema of simple and complex objects", () => {
     const union_schema = z.object({
