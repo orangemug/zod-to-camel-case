@@ -10,198 +10,198 @@ export type { ZodContribSnakeToCamel, ZodContribKeysToCamel };
 export type zodToCamelCaseOptions = { bidirectional?: boolean };
 
 const parsers = {
-  "string": (schema: $ZodString, _remap: boolean) => {
+  "string": (schema: $ZodString) => {
     return schema
   },
-  "number": (schema: $ZodNumber, _remap: boolean) => {
+  "number": (schema: $ZodNumber) => {
     return schema
   },
-  "bigint": (schema: $ZodBigInt, _remap: boolean) => {
+  "bigint": (schema: $ZodBigInt) => {
     return schema;
   },
-  "boolean": (schema: $ZodBoolean, _remap: boolean) => {
+  "boolean": (schema: $ZodBoolean) => {
     return schema;
   },
-  "symbol": (schema: $ZodSymbol, _remap: boolean) => {
+  "symbol": (schema: $ZodSymbol) => {
     return schema;
   },
-  "undefined": (schema: $ZodUndefined, _remap: boolean) => {
+  "undefined": (schema: $ZodUndefined) => {
     return schema;
   },
-  "object": (schema: $ZodObject, remap: boolean) => {
-    const newShape = remap ? keysToCamelCaseNoDepth(schema._zod.def.shape) : schema._zod.def.shape;
+  "object": (schema: $ZodObject) => {
+    const newShape = keysToCamelCaseNoDepth(schema._zod.def.shape);
 
     return new $ZodObject({
       ...schema._zod.def,
         shape: Object.fromEntries(
         Object.entries(newShape).map(([k, v]) => [
           k,
-          parse(v as unknown as $ZodType, remap),
+          parse(v as unknown as $ZodType),
         ]),
       ),
-      catchall: schema._zod.def.catchall ? parse(schema._zod.def.catchall, remap) : undefined,
+      catchall: schema._zod.def.catchall ? parse(schema._zod.def.catchall) : undefined,
     });
   },
-  "function": (schema: $ZodFunction, remap: boolean) => {
+  "function": (schema: $ZodFunction) => {
     return new $ZodFunction({
       ...schema._zod.def,
-      input: parse(schema._zod.def.input, remap),
-      output: parse(schema._zod.def.output, remap),
+      input: parse(schema._zod.def.input),
+      output: parse(schema._zod.def.output),
     });
   },
-  "int": (schema: $ZodNumber, _remap: boolean) => {
+  "int": (schema: $ZodNumber) => {
     return schema;
   },
-  "null": (schema: $ZodNull, _remap: boolean) => {
+  "null": (schema: $ZodNull) => {
     return schema;
   },
-  "void": (schema: $ZodVoid, _remap: boolean) => {
+  "void": (schema: $ZodVoid) => {
     return schema;
   },
-  "never": (schema: $ZodNever, _remap: boolean) => {
+  "never": (schema: $ZodNever) => {
     return schema
   },
-  "any": (schema: $ZodAny, _remap: boolean) => {
+  "any": (schema: $ZodAny) => {
     return schema
   },
-  "unknown": (schema: $ZodUnknown, _remap: boolean) => {
+  "unknown": (schema: $ZodUnknown) => {
     return schema;
   },
-  "date": (schema: $ZodDate, _remap: boolean) => {
+  "date": (schema: $ZodDate) => {
     return schema
   },
-  "record": (schema: $ZodRecord, remap: boolean) => {
+  "record": (schema: $ZodRecord) => {
     return new $ZodRecord({
       ...schema._zod.def,
-      keyType: parse(schema._zod.def.keyType, remap) as $ZodType<string | number | symbol, unknown>,
-      valueType: parse(schema._zod.def.valueType, remap) as $ZodRecordDef["valueType"],
+      keyType: parse(schema._zod.def.keyType) as $ZodType<string | number | symbol, unknown>,
+      valueType: parse(schema._zod.def.valueType) as $ZodRecordDef["valueType"],
     })
   },
-  "file": (schema: $ZodFile, _remap: boolean) => {
+  "file": (schema: $ZodFile) => {
     return schema;
   },
-  "array": (schema: $ZodArray, remap: boolean) => {
+  "array": (schema: $ZodArray) => {
     return new $ZodArray({
       ...schema._zod.def,
-      element: parse(schema._zod.def.element, remap),
+      element: parse(schema._zod.def.element),
     });
   },
-  "tuple": (schema: $ZodTuple, remap: boolean) => {
+  "tuple": (schema: $ZodTuple) => {
     return new $ZodTuple({
       ...schema._zod.def,
-      items: (schema._zod.def.items ?? []).map((item) => parse(item, remap))
+      items: (schema._zod.def.items ?? []).map((item) => parse(item))
     });
   },
-  "union": (schema: $ZodUnion, remap: boolean) => {
+  "union": (schema: $ZodUnion) => {
     return new $ZodUnion({
       ...schema._zod.def,
-      options: schema._zod.def.options.map((option) => parse(option, remap)),
+      options: schema._zod.def.options.map((option) => parse(option)),
     });
   },
-  "intersection": (schema: $ZodIntersection, remap: boolean) => {
+  "intersection": (schema: $ZodIntersection) => {
     return new $ZodIntersection({
       ...schema._zod.def,
-      left: parse(schema._zod.def.left, remap),
-      right: parse(schema._zod.def.right, remap),
+      left: parse(schema._zod.def.left),
+      right: parse(schema._zod.def.right),
     });
   },
-  "map": (schema: $ZodMap, remap: boolean) => {
+  "map": (schema: $ZodMap) => {
     return new $ZodMap({
       ...schema._zod.def,
-      keyType: parse(schema._zod.def.keyType, remap),
-      valueType: parse(schema._zod.def.valueType, remap),
+      keyType: parse(schema._zod.def.keyType),
+      valueType: parse(schema._zod.def.valueType),
     });
   },
-  "set": (schema: $ZodSet, remap: boolean) => {
+  "set": (schema: $ZodSet) => {
     return new $ZodSet({
       ...schema._zod.def,
-      valueType: parse(schema._zod.def.valueType, remap),
+      valueType: parse(schema._zod.def.valueType),
     });
   },
-  "enum": (schema: $ZodEnum, _remap: boolean) => {
+  "enum": (schema: $ZodEnum) => {
     return schema;
   },
-  "literal": (schema: $ZodLiteral, _remap: boolean) => {
+  "literal": (schema: $ZodLiteral) => {
     return schema;
   },
-  "nullable": (schema: $ZodNullable, remap: boolean) => {
+  "nullable": (schema: $ZodNullable) => {
     return new $ZodNullable({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap),
+      innerType: parse(schema._zod.def.innerType),
     });
   },
-  "optional": (schema: $ZodOptional, remap: boolean) => {
+  "optional": (schema: $ZodOptional) => {
     return new $ZodOptional({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap),
+      innerType: parse(schema._zod.def.innerType),
     });
   },
-  "nonoptional": (schema: $ZodNonOptional, remap: boolean) => {
+  "nonoptional": (schema: $ZodNonOptional) => {
     return new $ZodNonOptional({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap),
+      innerType: parse(schema._zod.def.innerType),
     });
   },
-  "success": (schema: $ZodSuccess, remap: boolean) => {
+  "success": (schema: $ZodSuccess) => {
     return new $ZodSuccess({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap),
+      innerType: parse(schema._zod.def.innerType),
     });
   },
-  "transform": (schema: $ZodTransform, remap: boolean) => {
+  "transform": (schema: $ZodTransform) => {
     return schema
   },
-  "default": (schema: $ZodDefault, remap: boolean) => {
+  "default": (schema: $ZodDefault) => {
     return new $ZodDefault({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap),
+      innerType: parse(schema._zod.def.innerType),
     });
   },
-  "prefault": (schema: $ZodPrefault, remap: boolean) => {
+  "prefault": (schema: $ZodPrefault) => {
     return new $ZodPrefault({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap),
+      innerType: parse(schema._zod.def.innerType),
     });
   },
-  "catch": (schema: $ZodCatch, remap: boolean) => {
+  "catch": (schema: $ZodCatch) => {
     return new $ZodCatch({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap),
+      innerType: parse(schema._zod.def.innerType),
     });
   },
-  "nan": (schema: $ZodNaN, remap: boolean) => {
+  "nan": (schema: $ZodNaN) => {
     return schema;
   },
-  "pipe": (schema: $ZodPipe, remap: boolean) => {
+  "pipe": (schema: $ZodPipe) => {
     return schema;
   },
-  "readonly": (schema: $ZodReadonly, remap: boolean) => {
+  "readonly": (schema: $ZodReadonly) => {
     return new $ZodReadonly({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap),
+      innerType: parse(schema._zod.def.innerType),
     });
   },
   "template_literal": (schema: $ZodTemplateLiteral) => {
     return schema;
   },
-  "promise": (schema: $ZodPromise, remap: boolean ) => {
+  "promise": (schema: $ZodPromise ) => {
     return new $ZodPromise({
       ...schema._zod.def,
-      innerType: parse(schema._zod.def.innerType, remap)
+      innerType: parse(schema._zod.def.innerType)
     });
   },
-  "lazy": (schema: $ZodLazy, remap: boolean) => {
+  "lazy": (schema: $ZodLazy) => {
     return schema;
   },
-  "custom": (schema: $ZodCustom, remap: boolean) => {
+  "custom": (schema: $ZodCustom) => {
     return schema;
   },
 } as const
 
-export function parse<T extends $ZodType>(schema: T, remap: boolean): T {
+export function parse<T extends $ZodType>(schema: T): T {
   const type = schema._zod.def.type;
   const fn = parsers[type]
- const out = (fn as unknown as (schema: $ZodType, remap: boolean) => $ZodType)(schema, remap);
+ const out = (fn as unknown as (schema: $ZodType) => $ZodType)(schema);
  return out as T;
 }
 
@@ -238,14 +238,14 @@ export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   {bidirectional=false}: zodToCamelCaseOptions = {},
 ) {
-  const schemaNew = parse(schema, true);
+  const schemaNew = parse(schema);
 
-  const remap = (data: unknown) => {
+  const remapKeys = (data: unknown) => {
     return bidirectional ? data : keysToCamelCase(data);
-  }
+  };
 
   const wrapped = preprocess(
-    remap,
+    remapKeys,
     schemaNew,
   ) as ZodType<ZodContribKeysToCamel<zodInfer<T>>, unknown>;
 
