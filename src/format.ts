@@ -23,12 +23,13 @@ export const snakeToCamelCase = (str: string) => {
   });
 };
 
-export function keysToCamelCase<T, S=object>(obj: T): ZodContribKeysToCamel<T, S> {
+export function keysToCamelCase<T, S>(obj: T): ZodContribKeysToCamel<T, S> {
   if (Array.isArray(obj)) return obj.map(keysToCamelCase) as ZodContribKeysToCamel<T, S>;
   if (obj instanceof Set) return new Set(Array.from(obj).map(keysToCamelCase)) as ZodContribKeysToCamel<T, S>;
   if (obj instanceof Map) return new Map(Array.from(obj).map(([k, v]) => [keysToCamelCase(k), keysToCamelCase(v)])) as ZodContribKeysToCamel<T, S>;
   // if (obj instanceof Promise) return obj;
-  if (Array.isArray(obj)) return obj.map(keysToCamelCase) as ZodContribKeysToCamel<T, S>;
+  // if (obj instanceof Function) return obj;
+  // if (obj instanceof File) return obj;
   if (obj !== null && typeof obj === "object") {
     return Object.fromEntries(
       Object.entries(obj).map(([k, v]) => [
@@ -40,15 +41,11 @@ export function keysToCamelCase<T, S=object>(obj: T): ZodContribKeysToCamel<T, S
   return obj as ZodContribKeysToCamel<T, S>;
 }
 
-export function keysToCamelCaseNoDepth<T>(obj: T): ZodContribKeysToCamel<T, $ZodShape> {
-  if (Array.isArray(obj)) return obj.map(keysToCamelCaseNoDepth) as ZodContribKeysToCamel<T, $ZodShape>;
-  if (obj !== null && typeof obj === "object") {
-    return Object.fromEntries(
-      Object.entries(obj).map(([k, v]) => [
-        snakeToCamelCase(k),
-        v,
-      ]),
-    ) as ZodContribKeysToCamel<T, $ZodShape>;
-  }
-  return obj as ZodContribKeysToCamel<T, $ZodShape>;
+export function keysToCamelCaseObjectRoot(obj: object): ZodContribKeysToCamel<object, $ZodShape> {
+  return Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [
+      snakeToCamelCase(k),
+      v,
+    ]),
+  ) as ZodContribKeysToCamel<object, $ZodShape>;
 }

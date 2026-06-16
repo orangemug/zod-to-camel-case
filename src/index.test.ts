@@ -305,7 +305,14 @@ describe("zodToCamelCase (unidirectional)", () => {
   })
   
   it.skip("can convert a 'function' schema", () => {
-
+    // const schema = zodToCamelCase(z.function({
+    //   input: [z.string()], // parameters (must be an array or a ZodTuple)
+    //   output: z.number()  // return type
+    // }));
+    // const fn = (input: string) => input.length;
+    // const out = schema.parse(fn)
+    // expect(out).toBeDefined();
+    // expect(out("test")).toEqual(4);
   })
   
   it("can convert a 'int' schema", () => {
@@ -349,9 +356,9 @@ describe("zodToCamelCase (unidirectional)", () => {
   })
   
   it.skip("can convert a 'file' schema", () => {
-    const schema = zodToCamelCase(z.file());
-    const file = new File([], "test.txt")
-    expect(schema.parse(file)).toEqual(file);
+    // const schema = zodToCamelCase(z.file());
+    // const file = new File([], "test.txt")
+    // expect(schema.parse(file)).toEqual(file);
   })
   
   it("can convert a 'array' schema", () => {
@@ -370,8 +377,12 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(schema.parse(123)).toEqual(123);
   })
   
-  it.skip("can convert a 'intersection' schema", () => {
-
+  it("can convert a 'intersection' schema", () => {
+    const person = z.object({ name: z.string() });
+    const employee = z.object({ role: z.string() });
+    
+    const employedPerson = zodToCamelCase(z.intersection(person, employee));
+    expect(employedPerson.parse({ name: "John", role: "Developer" })).toEqual({ name: "John", role: "Developer" });
   })
   
   it("can convert a 'map' schema", () => {
@@ -418,7 +429,8 @@ describe("zodToCamelCase (unidirectional)", () => {
   })
   
   it.skip("can convert a 'success' schema", () => {
-
+    // const schema = zodToCamelCase(z.success(z.string()));
+    // expect(schema.parse("test")).toEqual(true);
   })
   
   it("can convert a 'transform' schema", () => {
@@ -446,16 +458,19 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(schema.parse(NaN)).toEqual(NaN);
   })
   
-  it.skip("can convert a 'pipe' schema", () => {
-
+  it("can convert a 'pipe' schema", () => {
+    const schema = zodToCamelCase(z.string().pipe(z.transform(str => str.length * 2)));
+    expect(schema.parse("testing" as any)).toEqual(14);
   })
   
-  it.skip("can convert a 'readonly' schema", () => {
-
+  it("can convert a 'readonly' schema", () => {
+    const schema = zodToCamelCase(z.string().readonly());
+    expect(schema.parse("testing")).toEqual("testing");
   })
   
-  it.skip("can convert a 'template_literal' schema", () => {
-
+  it("can convert a 'template_literal' schema", () => {
+    const schema = zodToCamelCase(z.templateLiteral([ "hello, ", z.string(), "!" ]));
+    expect(schema.parse("hello, testing!")).toEqual("hello, testing!");
   })
   
   it.skip("can convert a 'promise' schema", async () => {
@@ -464,11 +479,19 @@ describe("zodToCamelCase (unidirectional)", () => {
   })
   
   it.skip("can convert a 'lazy' schema", () => {
-
+    // const schema = zodToCamelCase(z.lazy(() => zodToCamelCase(z.object({foo_bar: z.string()}))));
+    // expect(schema.parse({foo_bar: "testing"})).toEqual({fooBar: "testing"});
   })
   
-  it.skip("can convert a 'custom' schema", () => {
+  it("can convert a 'custom' schema", () => {
+  })
 
+  it("can convert a 'stringFormat' schema", () => {
+    const schema = zodToCamelCase(z.stringFormat("cool-id", (val)=>{
+      // arbitrary validation here
+      return val.length === 10 && val.startsWith("cool-");
+    }));
+    expect(schema.parse("cool-10000")).toEqual("cool-10000");
   })
 
   it("can convert a union schema of simple and complex objects", () => {

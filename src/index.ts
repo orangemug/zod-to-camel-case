@@ -1,4 +1,4 @@
-import { keysToCamelCase, keysToSnakeCase, keysToCamelCaseNoDepth } from "./format";
+import { keysToCamelCase, keysToSnakeCase, keysToCamelCaseObjectRoot } from "./format";
 import { ZodContribSnakeToCamel, ZodContribKeysToCamel } from "./types";
 import { $ZodFile, $ZodCustom, $ZodLazy, $ZodPromise, $ZodTemplateLiteral, $ZodReadonly, $ZodPipe, $ZodNaN, $ZodCatch, $ZodPrefault, $ZodDefault, $ZodTransform, $ZodSuccess, $ZodNonOptional, $ZodOptional, $ZodNullable, $ZodLiteral, $ZodEnum, $ZodSet, $ZodDate, $ZodUnknown, $ZodAny, $ZodNever, $ZodVoid, $ZodNull, $ZodFunction, $ZodObject, $ZodUndefined, $ZodSymbol, $ZodBoolean, $ZodBigInt, $ZodNumber, $ZodString, $ZodRecord, $ZodRecordDef, $ZodType, $ZodArray, $ZodTuple, $ZodUnion, $ZodIntersection, $ZodMap } from "zod/v4/core";
 import { preprocess, toJSONSchema } from "zod";
@@ -29,7 +29,7 @@ const parsers = {
     return schema;
   },
   "object": (schema: $ZodObject) => {
-    const newShape = keysToCamelCaseNoDepth(schema._zod.def.shape);
+    const newShape = keysToCamelCaseObjectRoot(schema._zod.def.shape);
 
     return new $ZodObject({
       ...schema._zod.def,
@@ -184,6 +184,9 @@ const parsers = {
   "template_literal": (schema: $ZodTemplateLiteral) => {
     return schema;
   },
+  "string_format": (schema: $ZodCustom) => {
+    return schema;
+  },
   "promise": (schema: $ZodPromise ) => {
     return new $ZodPromise({
       ...schema._zod.def,
@@ -201,7 +204,7 @@ const parsers = {
 export function parse<T extends $ZodType>(schema: T): T {
   const type = schema._zod.def.type;
   const fn = parsers[type]
- const out = (fn as unknown as (schema: $ZodType) => $ZodType)(schema);
+ const out = fn ? (fn as unknown as (schema: $ZodType) => $ZodType)(schema) : schema;
  return out as T;
 }
 
