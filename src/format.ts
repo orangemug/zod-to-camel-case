@@ -1,4 +1,4 @@
-import {$ZodShape} from "zod/v4/core";
+import type { $ZodShape } from "zod/v4/core";
 import { ZodContribKeysToCamel } from "./types";
 
 export const camelToSnakeCase = (str: string) =>

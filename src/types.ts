@@ -1,5 +1,3 @@
-import { $ZodShape } from "zod/v4/core";
-
 // step 1: preserve leading underscores
 type ZodContribSnakeToCamelSplitLeadingUnderscores<
   S extends string,

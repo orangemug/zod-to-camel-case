@@ -1,8 +1,8 @@
 import { keysToCamelCase, keysToSnakeCase, keysToCamelCaseNoDepth } from "./format";
 import { ZodContribSnakeToCamel, ZodContribKeysToCamel } from "./types";
 import { $ZodFile, $ZodCustom, $ZodLazy, $ZodPromise, $ZodTemplateLiteral, $ZodReadonly, $ZodPipe, $ZodNaN, $ZodCatch, $ZodPrefault, $ZodDefault, $ZodTransform, $ZodSuccess, $ZodNonOptional, $ZodOptional, $ZodNullable, $ZodLiteral, $ZodEnum, $ZodSet, $ZodDate, $ZodUnknown, $ZodAny, $ZodNever, $ZodVoid, $ZodNull, $ZodFunction, $ZodObject, $ZodUndefined, $ZodSymbol, $ZodBoolean, $ZodBigInt, $ZodNumber, $ZodString, $ZodRecord, $ZodRecordDef, $ZodType, $ZodArray, $ZodTuple, $ZodUnion, $ZodIntersection, $ZodMap } from "zod/v4/core";
-import { ZodSafeParseResult, preprocess, toJSONSchema } from "zod";
-import {infer as zodInfer, ZodType} from "zod";
+import { preprocess, toJSONSchema } from "zod";
+import type {ZodSafeParseResult, infer as zodInfer, ZodType} from "zod";
 
 export { keysToCamelCase, keysToSnakeCase };
 export type { ZodContribSnakeToCamel, ZodContribKeysToCamel };
