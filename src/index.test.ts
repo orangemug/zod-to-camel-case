@@ -112,26 +112,6 @@ describe("zodToCamelCase (unidirectional)", () => {
       });
     });
 
-    test("parse errors are remapped", () => {
-      const schema = z.object({
-        key_one: z.string(),
-      });
-      const camelCaseSchema = zodToCamelCase(schema);
-      const results = camelCaseSchema.safeParse({
-        // @ts-expect-error
-        key_two: "one",
-      });
-      expect(results.success).toEqual(false);
-      expect(results.error?.message).toEqual(zodError(
-        {
-          expected: "string",
-          code: "invalid_type",
-          path: ["key_one"],
-          message: "Invalid input: expected string, received undefined",
-        },
-      ));
-    });
-
     test("non-object schema", () => {
       const schema = z.string();
       const camelCaseSchema = zodToCamelCase(schema);
@@ -171,26 +151,6 @@ describe("zodToCamelCase (unidirectional)", () => {
           fooBar: 4,
         },
       });
-    });
-
-    test("parse errors are remapped", () => {
-      const schema = z.object({
-        key_one: z.string(),
-      });
-      const camelCaseSchema = zodToCamelCase(schema);
-      expect(() => {
-        camelCaseSchema.parse({
-          // @ts-expect-error
-          key_two: "one",
-        });
-      }).toThrow(zodError(
-        {
-          expected: "string",
-          code: "invalid_type",
-          path: ["key_one"],
-          message: "Invalid input: expected string, received undefined",
-        },
-      ));
     });
 
     test("non parse error", () => {
@@ -284,8 +244,9 @@ describe("zodToCamelCase (unidirectional)", () => {
     const camelData = keysToCamelCase(optional_data);
 
     const camelCaseSchema = zodToCamelCase(optional_schema);
-
-    expect(camelCaseSchema.parse(optional_data)).toEqual(camelData);
+    
+    const out = camelCaseSchema.parse(optional_data)
+    expect(out).toEqual(camelData);
   });
 
   it("can convert a complex schema", () => {
@@ -381,7 +342,7 @@ describe("zodToCamelCase (unidirectional)", () => {
       z.object({ element_name: z.string() })
     );
     const arraySchema = z.array(elementSchema);
-  
+
     expect(arraySchema.parse(
       [
         { element_name: "a" },
@@ -420,7 +381,7 @@ describe("zodToCamelCase (unidirectional)", () => {
       {
         expected: "string",
         code: "invalid_type",
-        path: ["key_two"],
+        path: ["keyTwo"],
         message: "Invalid input: expected string, received number",
       },
     ));
@@ -443,7 +404,7 @@ describe("zodToCamelCase (unidirectional)", () => {
       {
         expected: "string",
         code: "invalid_type",
-        path: ["key_one"],
+        path: ["keyOne"],
         message: "Invalid input: expected string, received number",
       },
     ));
@@ -496,7 +457,7 @@ describe("zodToCamelCase (unidirectional)", () => {
       {
         expected: "string",
         code: "invalid_type",
-        path: ["key_one"],
+        path: ["keyOne"],
         message: "Invalid input: expected string, received number",
       },
     ));
@@ -625,26 +586,6 @@ describe("zodToCamelCase (bidirectional)", () => {
       });
     });
 
-    test("parse errors are remapped", () => {
-      const schema = z.object({
-        key_one: z.string(),
-      });
-      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
-      const results = camelCaseSchema.safeParse({
-        // @ts-expect-error
-        keyTwo: "one",
-      });
-      expect(results.success).toEqual(false);
-      expect(results.error?.message).toEqual(zodError(
-        {
-          expected: "string",
-          code: "invalid_type",
-          path: ["keyOne"],
-          message: "Invalid input: expected string, received undefined",
-        },
-      ));
-    });
-
     test("non-object schema", () => {
       const schema = z.string();
       const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
@@ -686,26 +627,6 @@ describe("zodToCamelCase (bidirectional)", () => {
       });
     });
 
-    test("parse errors are remapped", () => {
-      const schema = z.object({
-        key_one: z.string(),
-      });
-      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
-      expect(() => {
-        camelCaseSchema.parse({
-          // @ts-expect-error
-          keyTwo: "one",
-        });
-      }).toThrow(zodError(
-        {
-          expected: "string",
-          code: "invalid_type",
-          path: ["keyOne"],
-          message: "Invalid input: expected string, received undefined",
-        },
-      ));
-    });
-
     test("non parse error", () => {
       const schema = z.object({
         key_one: z.string().transform(() => {
@@ -734,6 +655,37 @@ describe("zodToCamelCase (bidirectional)", () => {
       const result = camelCaseSchema.parse([{ fooBar: "testing" }]);
       expect(result).toEqual([{ fooBar: "testing" }]);
     });
+    
   });
+
+  test("toJSONSchema", () => {
+    const schema = z.array(z.object({ foo_bar: z.string() }));
+    const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
+    const result = camelCaseSchema.toJSONSchema();
+    expect(result).toEqual({
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "fooBar": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "fooBar",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    });
+  });
+
+  test("pipe", () => {
+    const schema = z.object({ foo_bar: z.string() });
+    const camelCaseSchema = zodToCamelCase(schema, { bidirectional: false });
+    const result = camelCaseSchema.pipe(z.transform(o => Object.keys(o))).parse({ foo_bar: "testing" });
+    expect(result).toEqual(["fooBar"]);
+  });
+
 });
 

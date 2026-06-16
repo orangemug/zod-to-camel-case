@@ -1,3 +1,5 @@
+import { $ZodShape } from "zod/v4/core";
+
 // step 1: preserve leading underscores
 type ZodContribSnakeToCamelSplitLeadingUnderscores<
   S extends string,
@@ -34,7 +36,7 @@ export type ZodContribSnakeToCamel<S extends string> =
       : never
     : never;
 
-export type ZodContribKeysToCamel<U> =
+export type ZodContribKeysToCamel<U, S=object> =
   // Empty tuple
   U extends []
     ? []
@@ -45,7 +47,7 @@ export type ZodContribKeysToCamel<U> =
       : U extends Array<infer V>
         ? Array<ZodContribKeysToCamel<V>>
         // Object
-        : U extends object
+        : U extends S
           ? {
               [K in keyof U as ZodContribSnakeToCamel<
                 string & K
