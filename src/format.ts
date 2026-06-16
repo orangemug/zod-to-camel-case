@@ -23,7 +23,11 @@ export const snakeToCamelCase = (str: string) => {
   });
 };
 
-export function keysToCamelCase<T, S=object>(obj: T,): ZodContribKeysToCamel<T, S> {
+export function keysToCamelCase<T, S=object>(obj: T): ZodContribKeysToCamel<T, S> {
+  if (Array.isArray(obj)) return obj.map(keysToCamelCase) as ZodContribKeysToCamel<T, S>;
+  if (obj instanceof Set) return new Set(Array.from(obj).map(keysToCamelCase)) as ZodContribKeysToCamel<T, S>;
+  if (obj instanceof Map) return new Map(Array.from(obj).map(([k, v]) => [keysToCamelCase(k), keysToCamelCase(v)])) as ZodContribKeysToCamel<T, S>;
+  // if (obj instanceof Promise) return obj;
   if (Array.isArray(obj)) return obj.map(keysToCamelCase) as ZodContribKeysToCamel<T, S>;
   if (obj !== null && typeof obj === "object") {
     return Object.fromEntries(

@@ -374,15 +374,19 @@ describe("zodToCamelCase (unidirectional)", () => {
 
   })
   
-  it.skip("can convert a 'map' schema", () => {
+  it("can convert a 'map' schema", () => {
     const schema = zodToCamelCase(z.map(z.string(), z.number()));
-    const m = new Map([["a", 3]]);
+    const m = new Map();
+    m.set("a", 1);
+    m.set("b", 2);
     expect(schema.parse(m)).toEqual(m);
   })
   
-  it.skip("can convert a 'set' schema", () => {
+  it("can convert a 'set' schema", () => {
     const schema = zodToCamelCase(z.set(z.string()));
-    const s = new Set(["a", "b", "c"]);
+    const s = new Set<string>();
+    s.add("a");
+    s.add("b");
     expect(schema.parse(s)).toEqual(s);
   })
   
@@ -417,24 +421,29 @@ describe("zodToCamelCase (unidirectional)", () => {
 
   })
   
-  it.skip("can convert a 'transform' schema", () => {
-
+  it("can convert a 'transform' schema", () => {
+    const schema = zodToCamelCase(z.string().transform(val => val.length));
+    expect(schema.parse("test")).toEqual(4);
   })
   
-  it.skip("can convert a 'default' schema", () => {
-
+  it("can convert a 'default' schema", () => {
+    const schema = zodToCamelCase(z.string().default("hello"));
+    expect(schema.parse(undefined)).toEqual("hello");
   })
   
-  it.skip("can convert a 'prefault' schema", () => {
-
+  it("can convert a 'prefault' schema", () => {
+    const schema = zodToCamelCase(z.string().trim().toUpperCase().prefault("tiger"));
+    expect(schema.parse(undefined)).toEqual("TIGER");
   })
   
-  it.skip("can convert a 'catch' schema", () => {
-
+  it("can convert a 'catch' schema", () => {
+    const schema = zodToCamelCase(z.number().catch(42));
+    expect(schema.parse("testing")).toEqual(42);
   })
   
-  it.skip("can convert a 'nan' schema", () => {
-
+  it("can convert a 'nan' schema", () => {
+    const schema = zodToCamelCase(z.nan());
+    expect(schema.parse(NaN)).toEqual(NaN);
   })
   
   it.skip("can convert a 'pipe' schema", () => {
@@ -449,8 +458,9 @@ describe("zodToCamelCase (unidirectional)", () => {
 
   })
   
-  it.skip("can convert a 'promise' schema", () => {
-
+  it.skip("can convert a 'promise' schema", async () => {
+    // const schema = zodToCamelCase(z.promise(z.number()));
+    // expect(await schema.parseAsync(Promise.resolve(2))).toEqual(2);
   })
   
   it.skip("can convert a 'lazy' schema", () => {
