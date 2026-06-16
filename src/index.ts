@@ -1,7 +1,8 @@
 import { keysToCamelCase, keysToSnakeCase, keysToCamelCaseNoDepth } from "./format";
 import { ZodContribSnakeToCamel, ZodContribKeysToCamel } from "./types";
 import { $ZodFile, $ZodCustom, $ZodLazy, $ZodPromise, $ZodTemplateLiteral, $ZodReadonly, $ZodPipe, $ZodNaN, $ZodCatch, $ZodPrefault, $ZodDefault, $ZodTransform, $ZodSuccess, $ZodNonOptional, $ZodOptional, $ZodNullable, $ZodLiteral, $ZodEnum, $ZodSet, $ZodDate, $ZodUnknown, $ZodAny, $ZodNever, $ZodVoid, $ZodNull, $ZodFunction, $ZodObject, $ZodUndefined, $ZodSymbol, $ZodBoolean, $ZodBigInt, $ZodNumber, $ZodString, $ZodRecord, $ZodRecordDef, $ZodType, $ZodArray, $ZodTuple, $ZodUnion, $ZodIntersection, $ZodMap } from "zod/v4/core";
-import z, { ZodSafeParseResult, ZodType } from "zod";
+import { ZodSafeParseResult, preprocess, toJSONSchema } from "zod";
+import {infer as zodInfer, ZodType} from "zod";
 
 export { keysToCamelCase, keysToSnakeCase };
 export type { ZodContribSnakeToCamel, ZodContribKeysToCamel };
@@ -214,21 +215,21 @@ export function parse<T extends $ZodType>(schema: T, remap: boolean): T {
  return out as T;
 }
 
-type parse<Input, T> = (input: Input) => ZodContribKeysToCamel<z.infer<T>>;
+type parse<Input, T> = (input: Input) => ZodContribKeysToCamel<zodInfer<T>>;
 
 // safeParse(...) with optional `Input` type
-type safeParse<Input, T> = (input: Input) => ZodSafeParseResult<ZodContribKeysToCamel<z.infer<T>>>;
+type safeParse<Input, T> = (input: Input) => ZodSafeParseResult<ZodContribKeysToCamel<zodInfer<T>>>;
 
 // zodToCamelCase (unidirectional)
 export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   // Overload for 'true' condition
   options: { bidirectional: true },
-): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>>, "parse" | "safeParse"> & {
+): Omit<ZodType<ZodContribKeysToCamel<zodInfer<T>>>, "parse" | "safeParse"> & {
   // Expecting snake-case-case input to parse
-  parse: parse<ZodContribKeysToCamel<z.infer<T>>, T>;
+  parse: parse<ZodContribKeysToCamel<zodInfer<T>>, T>;
   // Expecting snake-case-case input to safeParse
-  safeParse: safeParse<ZodContribKeysToCamel<z.infer<T>>, T>;
+  safeParse: safeParse<ZodContribKeysToCamel<zodInfer<T>>, T>;
 };
 
 // zodToCamelCase (bidirectional)
@@ -236,11 +237,11 @@ export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   // Overload for 'false' and 'missing' condition
   options?: { bidirectional?: false },
-): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>>, "parse" | "safeParse"> & {
+): Omit<ZodType<ZodContribKeysToCamel<zodInfer<T>>>, "parse" | "safeParse"> & {
   // Expecting snake-case-case input to parse
-  parse: parse<z.infer<T>, T>;
+  parse: parse<zodInfer<T>, T>;
   // Expecting snake-case-case input to safeParse
-  safeParse: safeParse<z.infer<T>, T>;
+  safeParse: safeParse<zodInfer<T>, T>;
 };
 
 export default function zodToCamelCase<T extends ZodType>(
@@ -253,14 +254,14 @@ export default function zodToCamelCase<T extends ZodType>(
     return bidirectional ? data : keysToCamelCase(data);
   }
 
-  const wrapped = z.preprocess(
+  const wrapped = preprocess(
     remap,
     schemaNew,
-  ) as z.ZodType<ZodContribKeysToCamel<z.infer<T>>, unknown>;
+  ) as ZodType<ZodContribKeysToCamel<zodInfer<T>>, unknown>;
 
   Object.defineProperty(wrapped, "toJSONSchema", {
-    value: (params?: Parameters<typeof z.toJSONSchema>[1]) =>
-      z.toJSONSchema(schemaNew, params),
+    value: (params?: Parameters<typeof toJSONSchema>[1]) =>
+      toJSONSchema(schemaNew, params),
     configurable: true,
   });
 
