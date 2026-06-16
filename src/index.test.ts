@@ -375,31 +375,42 @@ describe("zodToCamelCase (unidirectional)", () => {
   })
   
   it.skip("can convert a 'map' schema", () => {
-
+    const schema = zodToCamelCase(z.map(z.string(), z.number()));
+    const m = new Map([["a", 3]]);
+    expect(schema.parse(m)).toEqual(m);
   })
   
   it.skip("can convert a 'set' schema", () => {
-
+    const schema = zodToCamelCase(z.set(z.string()));
+    const s = new Set(["a", "b", "c"]);
+    expect(schema.parse(s)).toEqual(s);
   })
   
-  it.skip("can convert a 'enum' schema", () => {
-
+  it("can convert a 'enum' schema", () => {
+    const schema = zodToCamelCase(z.enum(["a", "b", "c"]));
+    expect(schema.parse("a")).toEqual("a");
+    expect(schema.parse("b")).toEqual("b");
+    expect(schema.parse("c")).toEqual("c");
   })
   
-  it.skip("can convert a 'literal' schema", () => {
-
+  it("can convert a 'literal' schema", () => {
+    const schema = zodToCamelCase(z.literal("testing"));
+    expect(schema.parse("testing")).toEqual("testing");
   })
   
-  it.skip("can convert a 'nullable' schema", () => {
-
+  it("can convert a 'nullable' schema", () => {
+    const schema = zodToCamelCase(z.string().nullable());
+    expect(schema.parse(null)).toEqual(null);
   })
   
-  it.skip("can convert a 'optional' schema", () => {
-
+  it("can convert a 'optional' schema", () => {
+    const schema = zodToCamelCase(z.string().optional());
+    expect(schema.parse(undefined)).toEqual(undefined);
   })
   
-  it.skip("can convert a 'nonoptional' schema", () => {
-
+  it("can convert a 'nonoptional' schema", () => {
+    const schema = zodToCamelCase(z.string().nonoptional());
+    expect(schema.parse("test")).toEqual("test");
   })
   
   it.skip("can convert a 'success' schema", () => {
