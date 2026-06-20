@@ -389,9 +389,9 @@ describe("zodToCamelCase (unidirectional)", () => {
   it("can convert a 'map' schema", () => {
     const schema = zodToCamelCase(z.map(z.string(), z.number()));
     const m = new Map();
-    m.set("a", 1);
-    m.set("b", 2);
-    expect(schema.parse(m)).toEqual(m);
+    m.set("foo_bar", 1);
+    m.set("bar_baz", 2);
+    expect(schema.parse(m)).toEqual(new Map([["fooBar", 1], ["barBaz", 2]]));
   })
   
   it("can convert a 'set' schema", () => {
