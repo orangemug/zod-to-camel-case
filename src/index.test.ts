@@ -429,9 +429,9 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(schema.parse("test")).toEqual("test");
   })
   
-  it.skip("can convert a 'success' schema", () => {
-    // const schema = zodToCamelCase(z.success(z.string()));
-    // expect(schema.parse("test")).toEqual(true);
+  it("can convert a 'success' schema", () => {
+    const schema = zodToCamelCase(z.success(z.string()));
+    expect(schema.parse("test")).toEqual(true);
   })
   
   it("can convert a 'transform' schema", () => {
@@ -479,9 +479,9 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(await schema.parseAsync(Promise.resolve(2))).toEqual(2);
   })
   
-  it.skip("can convert a 'lazy' schema", () => {
-    // const schema = zodToCamelCase(z.lazy(() => zodToCamelCase(z.object({foo_bar: z.string()}))));
-    // expect(schema.parse({foo_bar: "testing"})).toEqual({fooBar: "testing"});
+  it("can convert a 'lazy' schema", () => {
+    const schema = zodToCamelCase(z.lazy(() => zodToCamelCase(z.object({foo_bar: z.string()}))));
+    expect(schema.parse({foo_bar: "testing"})).toEqual({fooBar: "testing"});
   })
   
   it("can convert a 'custom' schema", () => {
