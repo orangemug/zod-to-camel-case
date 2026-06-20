@@ -172,16 +172,21 @@ export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   {bidirectional=false}: zodToCamelCaseOptions = {},
 ) {
+  // Always convert the schema to camelCase for internal use
   const camelSchema = parse(schema);
+
+  // Only convert the input/output if bidirectional is true
   const conditionalSchema = bidirectional ? camelSchema : schema;
 
   const zodClassicSchema = preprocess(
     (i) => i,
     conditionalSchema,
   ).transform(data => {
+    // If not bidirectional (unidirectional) then we need to convert the output data to camelCase
     return bidirectional ? data : keysToCamelCase(data);
   });
 
+  // We always need to use camelSchema for toJSONSchema because we don't provide input data so we can assume the schema is always camelCase
   Object.defineProperty(zodClassicSchema, "toJSONSchema", {
     value: (params?: Parameters<typeof toJSONSchema>[1]) =>
       toJSONSchema(camelSchema, params),
