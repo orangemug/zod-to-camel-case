@@ -172,22 +172,21 @@ export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   {bidirectional=false}: zodToCamelCaseOptions = {},
 ) {
-  const schemaNew = parse(schema);
+  const camelSchema = parse(schema);
+  const conditionalSchema = bidirectional ? camelSchema : schema;
 
-  const remapKeys = (data: unknown) => {
+  const zodClassicSchema = preprocess(
+    (i) => i,
+    conditionalSchema,
+  ).transform(data => {
     return bidirectional ? data : keysToCamelCase(data);
-  };
+  });
 
-  const wrapped = preprocess(
-    remapKeys,
-    schemaNew,
-  ) as ZodType<ZodContribKeysToCamel<z.infer<T>>, unknown>;
-
-  Object.defineProperty(wrapped, "toJSONSchema", {
+  Object.defineProperty(zodClassicSchema, "toJSONSchema", {
     value: (params?: Parameters<typeof toJSONSchema>[1]) =>
-      toJSONSchema(schemaNew, params),
+      toJSONSchema(camelSchema, params),
     configurable: true,
   });
 
-  return wrapped;
+  return zodClassicSchema;
 }
