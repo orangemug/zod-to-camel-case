@@ -15,7 +15,7 @@ const parsers = {
 
     return new $ZodObject({
       ...schema._zod.def,
-        shape: Object.fromEntries(
+      shape: Object.fromEntries(
         Object.entries(newShape).map(([k, v]) => [
           k,
           parse(v as unknown as $ZodType),
