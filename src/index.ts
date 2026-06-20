@@ -149,7 +149,7 @@ export default function zodToCamelCase<T extends ZodType>(
   schema: T,
   // Overload for 'true' condition
   options: { bidirectional: true },
-): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>, z.input<T>>, "parse" | "safeParse"> & {
+): Omit<ZodType<ZodContribKeysToCamel<z.infer<T>>, ZodContribKeysToCamel<z.input<T>>>, "parse" | "safeParse"> & {
   // Expecting snake-case-case input to parse
   parse: parse<ZodContribKeysToCamel<z.input<T>>, T>;
   // Expecting snake-case-case input to safeParse
