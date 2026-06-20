@@ -139,6 +139,14 @@ export function parse<T extends $ZodType>(schema: T): T {
   return out as T;
 }
 
+// This makes sure we have a zod classic schema rather than a zod v4 schema
+function convertToZodClassicSchema (conditionalSchema: ZodType) {
+  return preprocess(
+    (i) => i,
+    conditionalSchema,
+  )
+}
+
 type parse<Input, T> = (input: Input) => ZodContribKeysToCamel<z.infer<T>>;
 
 // safeParse(...) with optional `Input` type
@@ -173,15 +181,13 @@ export default function zodToCamelCase<T extends ZodType>(
   {bidirectional=false}: zodToCamelCaseOptions = {},
 ) {
   // Always convert the schema to camelCase for internal use
+  // We only use this for the bidirectional/toJSONSchema option, so error paths are correct at the point of conversion 
   const camelSchema = parse(schema);
 
   // Only convert the input/output if bidirectional is true
   const conditionalSchema = bidirectional ? camelSchema : schema;
 
-  const zodClassicSchema = preprocess(
-    (i) => i,
-    conditionalSchema,
-  ).transform(data => {
+  const zodClassicSchema = convertToZodClassicSchema(conditionalSchema).transform(data => {
     // If not bidirectional (unidirectional) then we need to convert the output data to camelCase
     return bidirectional ? data : keysToCamelCase(data);
   });
