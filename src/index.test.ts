@@ -617,7 +617,7 @@ describe("zodToCamelCase (unidirectional)", () => {
       {
         expected: "string",
         code: "invalid_type",
-        path: ["keyTwo"],
+        path: ["key_two"],
         message: "Invalid input: expected string, received number",
       },
     ));
@@ -640,7 +640,7 @@ describe("zodToCamelCase (unidirectional)", () => {
       {
         expected: "string",
         code: "invalid_type",
-        path: ["keyOne"],
+        path: ["key_one"],
         message: "Invalid input: expected string, received number",
       },
     ));
@@ -693,7 +693,7 @@ describe("zodToCamelCase (unidirectional)", () => {
       {
         expected: "string",
         code: "invalid_type",
-        path: ["keyOne"],
+        path: ["key_one"],
         message: "Invalid input: expected string, received number",
       },
     ));
