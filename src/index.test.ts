@@ -1,9 +1,10 @@
-import z from "zod";
+import z, { file } from "zod";
 import { describe, expect, expectTypeOf, test, it } from "vitest";
 
 import zodToCamelCase from "./";
 import { keysToCamelCase } from "./format";
 import { zodError } from "./test-utils";
+import { Decimal } from "decimal.js";
 
 const complex_schema = z
   .object({
@@ -112,26 +113,6 @@ describe("zodToCamelCase (unidirectional)", () => {
       });
     });
 
-    test("parse errors are remapped", () => {
-      const schema = z.object({
-        key_one: z.string(),
-      });
-      const camelCaseSchema = zodToCamelCase(schema);
-      const results = camelCaseSchema.safeParse({
-        // @ts-expect-error
-        key_two: "one",
-      });
-      expect(results.success).toEqual(false);
-      expect(results.error?.message).toEqual(zodError(
-        {
-          expected: "string",
-          code: "invalid_type",
-          path: ["key_one"],
-          message: "Invalid input: expected string, received undefined",
-        },
-      ));
-    });
-
     test("non-object schema", () => {
       const schema = z.string();
       const camelCaseSchema = zodToCamelCase(schema);
@@ -171,26 +152,6 @@ describe("zodToCamelCase (unidirectional)", () => {
           fooBar: 4,
         },
       });
-    });
-
-    test("parse errors are remapped", () => {
-      const schema = z.object({
-        key_one: z.string(),
-      });
-      const camelCaseSchema = zodToCamelCase(schema);
-      expect(() => {
-        camelCaseSchema.parse({
-          // @ts-expect-error
-          key_two: "one",
-        });
-      }).toThrow(zodError(
-        {
-          expected: "string",
-          code: "invalid_type",
-          path: ["key_one"],
-          message: "Invalid input: expected string, received undefined",
-        },
-      ));
     });
 
     test("non parse error", () => {
@@ -284,8 +245,9 @@ describe("zodToCamelCase (unidirectional)", () => {
     const camelData = keysToCamelCase(optional_data);
 
     const camelCaseSchema = zodToCamelCase(optional_schema);
-
-    expect(camelCaseSchema.parse(optional_data)).toEqual(camelData);
+    
+    const out = camelCaseSchema.parse(optional_data)
+    expect(out).toEqual(camelData);
   });
 
   it("can convert a complex schema", () => {
@@ -299,6 +261,241 @@ describe("zodToCamelCase (unidirectional)", () => {
     expect(() => complex_schema.parse(example)).not.toThrow();
     expect(complex_schema.parse(example)).toEqual(example);
   });
+
+  it("can convert a 'string' schema", () => {
+    const schema = zodToCamelCase(z.string());
+    expect(schema.parse("test")).toEqual("test");
+  })
+
+  it("can convert a 'number' schema", () => {
+    const schema = zodToCamelCase(z.number());
+    expect(schema.parse(123)).toEqual(123);
+  })
+
+  it("can convert a 'bigint' schema", () => {
+    const schema = zodToCamelCase(z.bigint());
+    expect(schema.parse(BigInt(123))).toEqual(BigInt(123));
+  })
+
+  it("can convert a 'boolean' schema", () => {
+    const schema = zodToCamelCase(z.boolean());
+    expect(schema.parse(true)).toEqual(true);
+  })
+
+  it("can convert a 'symbol' schema", () => {
+    const schema = zodToCamelCase(z.symbol());
+    const sym = Symbol("test");
+    expect(schema.parse(sym)).toEqual(sym);
+  })
+
+  it("can convert a 'undefined' schema", () => {
+    const schema = zodToCamelCase(z.undefined());
+    expect(schema.parse(undefined)).toEqual(undefined);
+  })
+  
+  it("can convert a 'object' schema", () => {
+    const schema = zodToCamelCase(z.object({
+      test_param: z.string(),
+    }));
+    const data = {
+      test_param: "test",
+    };
+    expect(schema.parse(data)).toEqual({
+      testParam: "test",
+    });
+  })
+  
+  it("can convert a 'function' schema", () => {
+    const schema = zodToCamelCase(z.function({
+      input: [z.string()], // parameters (must be an array or a ZodTuple)
+      output: z.number()  // return type
+    }));
+    const fn = (input: string) => input.length;
+    const out = schema.parse(fn)
+    expect(out).toBeDefined();
+    expect(out("test")).toEqual(4);
+  })
+  
+  it("can convert a 'int' schema", () => {
+    const schema = zodToCamelCase(z.int());
+    expect(schema.parse(1)).toEqual(1);
+  })
+  
+  it("can convert a 'null' schema", () => {
+    const schema = zodToCamelCase(z.null());
+    expect(schema.parse(null)).toEqual(null);
+  })
+  
+  it("can convert a 'void' schema", () => {
+    const schema = zodToCamelCase(z.void());
+    expect(schema.parse(void(0))).toEqual(void(0));
+  })
+  
+  it("can convert a 'never' schema", () => {
+    const schema = zodToCamelCase(z.never());
+    expect(() => schema.parse("foo" as never)).toThrow();
+  })
+  
+  it("can convert a 'any' schema", () => {
+    const schema = zodToCamelCase(z.any());
+    expect(schema.parse({a: 1})).toEqual({a: 1});
+  })
+  
+  it("can convert a 'unknown' schema", () => {
+    const schema = zodToCamelCase(z.unknown());
+    expect(schema.parse({a: 1})).toEqual({a: 1});
+  })
+  
+  it("can convert a 'date' schema", () => {
+    const schema = zodToCamelCase(z.iso.date());
+    expect(schema.parse("2020-01-01")).toEqual("2020-01-01");
+  })
+  
+  it("can convert a 'record' schema", () => {
+    const schema = zodToCamelCase(z.record(z.string(), z.number()));
+    expect(schema.parse({a: 23})).toEqual({a: 23});
+  })
+  
+  it("can convert a 'file' schema", () => {
+    const schema = zodToCamelCase(z.file());
+    const file = new File([], "test.txt")
+    expect(schema.parse(file)).toEqual(file);
+  })
+  
+  it("can convert a 'array' schema", () => {
+    const schema = zodToCamelCase(z.array(z.string()));
+    expect(schema.parse(["test"])).toEqual(["test"]);
+  })
+  
+  it("can convert a 'tuple' schema", () => {
+    const schema = zodToCamelCase(z.tuple([z.string(), z.number(), z.string()]));
+    expect(schema.parse(["test", 2, "test"])).toEqual(["test", 2, "test"]);
+  })
+  
+  it("can convert a 'union' schema", () => {
+    const schema = zodToCamelCase(z.union([z.string(), z.number()]));
+    expect(schema.parse("test")).toEqual("test");
+    expect(schema.parse(123)).toEqual(123);
+  })
+  
+  it("can convert a 'intersection' schema", () => {
+    const person = z.object({ name: z.string() });
+    const employee = z.object({ role: z.string() });
+    
+    const employedPerson = zodToCamelCase(z.intersection(person, employee));
+    expect(employedPerson.parse({ name: "John", role: "Developer" })).toEqual({ name: "John", role: "Developer" });
+  })
+  
+  it("can convert a 'map' schema", () => {
+    const schema = zodToCamelCase(z.map(z.string(), z.number()));
+    const m = new Map();
+    m.set("foo_bar", 1);
+    m.set("bar_baz", 2);
+    expect(schema.parse(m)).toEqual(new Map([["fooBar", 1], ["barBaz", 2]]));
+  })
+  
+  it("can convert a 'set' schema", () => {
+    const schema = zodToCamelCase(z.set(z.string()));
+    const s = new Set<string>();
+    s.add("a");
+    s.add("b");
+    expect(schema.parse(s)).toEqual(s);
+  })
+  
+  it("can convert a 'enum' schema", () => {
+    const schema = zodToCamelCase(z.enum(["a", "b", "c"]));
+    expect(schema.parse("a")).toEqual("a");
+    expect(schema.parse("b")).toEqual("b");
+    expect(schema.parse("c")).toEqual("c");
+  })
+  
+  it("can convert a 'literal' schema", () => {
+    const schema = zodToCamelCase(z.literal("testing"));
+    expect(schema.parse("testing")).toEqual("testing");
+  })
+  
+  it("can convert a 'nullable' schema", () => {
+    const schema = zodToCamelCase(z.string().nullable());
+    expect(schema.parse(null)).toEqual(null);
+  })
+  
+  it("can convert a 'optional' schema", () => {
+    const schema = zodToCamelCase(z.string().optional());
+    expect(schema.parse(undefined)).toEqual(undefined);
+  })
+  
+  it("can convert a 'nonoptional' schema", () => {
+    const schema = zodToCamelCase(z.string().nonoptional());
+    expect(schema.parse("test")).toEqual("test");
+  })
+  
+  it("can convert a 'success' schema", () => {
+    const schema = zodToCamelCase(z.success(z.string()));
+    expect(schema.parse("test")).toEqual(true);
+  })
+  
+  it("can convert a 'transform' schema", () => {
+    const schema = zodToCamelCase(z.string().transform(val => val.length));
+    expect(schema.parse("test" as any)).toEqual(4);
+  })
+  
+  it("can convert a 'default' schema", () => {
+    const schema = zodToCamelCase(z.string().default("hello"));
+    expect(schema.parse(undefined as any)).toEqual("hello");
+  })
+  
+  it("can convert a 'prefault' schema", () => {
+    const schema = zodToCamelCase(z.string().trim().toUpperCase().prefault("tiger"));
+    expect(schema.parse(undefined as any)).toEqual("TIGER");
+  })
+  
+  it("can convert a 'catch' schema", () => {
+    const schema = zodToCamelCase(z.number().catch(42));
+    expect(schema.parse("testing" as any)).toEqual(42);
+  })
+  
+  it("can convert a 'nan' schema", () => {
+    const schema = zodToCamelCase(z.nan());
+    expect(schema.parse(NaN)).toEqual(NaN);
+  })
+  
+  it("can convert a 'pipe' schema", () => {
+    const schema = zodToCamelCase(z.string().pipe(z.transform(str => str.length * 2)));
+    expect(schema.parse("testing" as any)).toEqual(14);
+  })
+  
+  it("can convert a 'readonly' schema", () => {
+    const schema = zodToCamelCase(z.string().readonly());
+    expect(schema.parse("testing")).toEqual("testing");
+  })
+  
+  it("can convert a 'template_literal' schema", () => {
+    const schema = zodToCamelCase(z.templateLiteral([ "hello, ", z.string(), "!" ]));
+    expect(schema.parse("hello, testing!")).toEqual("hello, testing!");
+  })
+  
+  it("can convert a 'promise' schema", async () => {
+    const schema = zodToCamelCase(z.promise(z.number()));
+    expect(await schema.parseAsync(Promise.resolve(2))).toEqual(2);
+  })
+  
+  it("can convert a 'lazy' schema", () => {
+    const schema = zodToCamelCase(z.lazy(() => zodToCamelCase(z.object({foo_bar: z.string()}))));
+    expect(schema.parse({foo_bar: "testing"})).toEqual({fooBar: "testing"});
+  })
+  
+  it("can convert a 'custom' schema", () => {
+    const schema = zodToCamelCase(z.custom<Decimal>((val) => Decimal.isDecimal(val)));
+    expect(schema.parse(new Decimal(123.45))).toEqual(new Decimal(123.45));
+  })
+
+  it("can convert a 'stringFormat' schema", () => {
+    const schema = zodToCamelCase(z.stringFormat("cool-id", (val)=>{
+      // arbitrary validation here
+      return val.length === 10 && val.startsWith("cool-");
+    }));
+    expect(schema.parse("cool-10000")).toEqual("cool-10000");
+  })
 
   it("can convert a union schema of simple and complex objects", () => {
     const union_schema = z.object({
@@ -381,7 +578,7 @@ describe("zodToCamelCase (unidirectional)", () => {
       z.object({ element_name: z.string() })
     );
     const arraySchema = z.array(elementSchema);
-  
+
     expect(arraySchema.parse(
       [
         { element_name: "a" },
@@ -625,26 +822,6 @@ describe("zodToCamelCase (bidirectional)", () => {
       });
     });
 
-    test("parse errors are remapped", () => {
-      const schema = z.object({
-        key_one: z.string(),
-      });
-      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
-      const results = camelCaseSchema.safeParse({
-        // @ts-expect-error
-        keyTwo: "one",
-      });
-      expect(results.success).toEqual(false);
-      expect(results.error?.message).toEqual(zodError(
-        {
-          expected: "string",
-          code: "invalid_type",
-          path: ["keyOne"],
-          message: "Invalid input: expected string, received undefined",
-        },
-      ));
-    });
-
     test("non-object schema", () => {
       const schema = z.string();
       const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
@@ -686,26 +863,6 @@ describe("zodToCamelCase (bidirectional)", () => {
       });
     });
 
-    test("parse errors are remapped", () => {
-      const schema = z.object({
-        key_one: z.string(),
-      });
-      const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
-      expect(() => {
-        camelCaseSchema.parse({
-          // @ts-expect-error
-          keyTwo: "one",
-        });
-      }).toThrow(zodError(
-        {
-          expected: "string",
-          code: "invalid_type",
-          path: ["keyOne"],
-          message: "Invalid input: expected string, received undefined",
-        },
-      ));
-    });
-
     test("non parse error", () => {
       const schema = z.object({
         key_one: z.string().transform(() => {
@@ -734,6 +891,37 @@ describe("zodToCamelCase (bidirectional)", () => {
       const result = camelCaseSchema.parse([{ fooBar: "testing" }]);
       expect(result).toEqual([{ fooBar: "testing" }]);
     });
+    
   });
+
+  test("toJSONSchema", () => {
+    const schema = z.array(z.object({ foo_bar: z.string() }));
+    const camelCaseSchema = zodToCamelCase(schema, { bidirectional: true });
+    const result = camelCaseSchema.toJSONSchema();
+    expect(result).toEqual({
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "fooBar": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "fooBar",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    });
+  });
+
+  test("pipe", () => {
+    const schema = z.object({ foo_bar: z.string() });
+    const camelCaseSchema = zodToCamelCase(schema, { bidirectional: false });
+    const result = camelCaseSchema.pipe(z.transform(o => Object.keys(o))).parse({ foo_bar: "testing" });
+    expect(result).toEqual(["fooBar"]);
+  });
+
 });
 

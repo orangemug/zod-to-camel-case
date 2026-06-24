@@ -34,8 +34,11 @@ export type ZodContribSnakeToCamel<S extends string> =
       : never
     : never;
 
-export type ZodContribKeysToCamel<U> =
+export type ZodContribKeysToCamel<U, S=object> =
   // Empty tuple
+  U extends Function
+    ? U
+    : 
   U extends []
     ? []
     // Non-empty tuple
@@ -45,7 +48,7 @@ export type ZodContribKeysToCamel<U> =
       : U extends Array<infer V>
         ? Array<ZodContribKeysToCamel<V>>
         // Object
-        : U extends object
+        : U extends S
           ? {
               [K in keyof U as ZodContribSnakeToCamel<
                 string & K
